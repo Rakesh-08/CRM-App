@@ -64,7 +64,7 @@ require('./routes/authRoutes')(expressApp);
 // server should be up and running at port 8080
 
 expressApp.listen(serverConfig.PORT, () => {
-    console.log('server is listening at port ')
+    console.log('server is listening at port ' + serverConfig.PORT)
 })
 
 
