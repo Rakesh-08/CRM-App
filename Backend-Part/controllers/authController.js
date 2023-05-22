@@ -60,7 +60,9 @@ const signin = async(req,res,next) => {
             message:"Failed! userid doesn't exist"
         })
         return;
+
     }
+ 
 
     if (user.userStatus !== constants.userStatus.approved) {
         res.status(403).send({

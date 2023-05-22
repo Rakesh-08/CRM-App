@@ -45,11 +45,11 @@ async function init() {
             name: "Rakesh",
             userId: 'admin',
             email: 'Mandal@gmail.com',
-            userStatus:'Approved',
+            userStatus:'APPROVED',
             userType: 'ADMIN',
             password: bcrypt.hashSync('sample1')
         })
-        console.log(user)
+       
         
     } catch (e) {
         console.log('Error while creating admin user: '+ e)
@@ -57,9 +57,11 @@ async function init() {
 
 
 }
-// import the authroutes
+// import the routes
 
 require('./routes/authRoutes')(expressApp);
+require("./routes/userRoutes")(expressApp);
+
 
 // server should be up and running at port 8080
 

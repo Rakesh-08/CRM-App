@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const constants = require("../utils/constants");
 
 
-const validateSingupRequest = async (req,res, next) => {
+const validateSignupRequest = async (req,res, next) => {
 
     //validate for name
     
@@ -63,7 +63,7 @@ const validateSingupRequest = async (req,res, next) => {
 
 
 
-module.exports = validateSingupRequest;
+module.exports = validateSignupRequest;
 
 
 
