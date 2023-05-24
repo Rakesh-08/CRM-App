@@ -91,7 +91,8 @@ const signin = async(req,res,next) => {
         email: user.email,
         userType: user.userType,
         userStatus: user.userStatus,
-        accessToken:token
+        accessToken: token,
+        
    })
 
 }

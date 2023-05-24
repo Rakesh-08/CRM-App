@@ -37,6 +37,14 @@ const userShchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
          default: () => { return Date.now() }
+    },
+    ticketsCreated: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref:"Ticket"
+    },
+    ticketsAssigned: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref:"Ticket"
     }
 })
 

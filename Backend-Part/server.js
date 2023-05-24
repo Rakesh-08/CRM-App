@@ -61,6 +61,7 @@ async function init() {
 
 require('./routes/authRoutes')(expressApp);
 require("./routes/userRoutes")(expressApp);
+require("./routes/ticketRoutes")(expressApp);
 
 
 // server should be up and running at port 8080
