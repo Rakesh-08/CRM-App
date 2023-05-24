@@ -15,8 +15,7 @@ const verifyToken = (req, res, next) => {
     jwt.verify(token, authConfig.secretKey, (err, decoded) => {
 
         if (err) {
-            console.log(err)
-            console.log(decoded)
+           
             return res.status(401).send({
                 message: "Request cannot be authenticated. Token is invalid"
             })

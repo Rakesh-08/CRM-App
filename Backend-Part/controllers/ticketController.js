@@ -1,5 +1,6 @@
 const Ticket = require("../models/ticketModel")
 const User = require("../models/userModel");
+const ticketRoutes = require("../routes/ticketRoutes");
 const constants = require("../utils/constants")
 
 const createTicket = async (req, res) => {
@@ -56,12 +57,13 @@ const updateTicket = async (req, res) => {
             _id: req.params._id
         })
 
-        // ticket can  be updated by the user who created that ticket 
+        // ticket can  be updated by the user who created that ticket or engineer assigned to that ticket or (admin itself)
+
         if (!ticket) {
             res.status(400).send({
                 message: "ticket does not exist"
             })
-        } else if (ticket && ticket.reporter === req.userId) {
+        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee== req.userId)) {
             let updatePassed = req.body;
 
             let updatedTicket = await Ticket.findOneAndUpdate({
@@ -72,9 +74,12 @@ const updateTicket = async (req, res) => {
 
         } else {
             res.status(200).send({
-                message: "only user who created this ticket can update this"
+                message: "only user and engineer connected with ticket can update this"
             })
         }
+
+
+
     } catch (err) {
         res.status(500).send({
             message: "some internal server error occurred"
@@ -84,11 +89,74 @@ const updateTicket = async (req, res) => {
 }
 
 const getAllTickets = async (req, res) => {
+ 
+    try {
+        let allTicketIds;
+
+        // if request is from customer or engineer;
+
+        let Request = await User.findOne({
+            userId: req.userId
+        }).select("ticketsCreated ticketsAssigned");
+
+        if (Request.ticketsCreated && Request.ticketsCreated.length > 0) {
+            allTicketIds = Request.ticketsCreated;
+
+        } else if (Request.ticketsAssigned && Request.ticketsAssigned.length > 0) {
+            allTicketIds = Request.ticketsAssigned;
+        }
+     
+        if (allTicketIds) {
+
+            let Tickets = await Ticket.find({
+                _id: {
+                    $in: allTicketIds
+                }
+            })
+            res.status(200).send(Tickets);
+        } else {
+            res.status(200).send({
+                message: "No Tickets exist for you"
+            })
+        }
+    } catch (err) {
+        res.status(500).send({
+            message:"some internal server error occurred"
+        })
+    }
 
 }
 
 const getTicketById = async (req, res) => {
 
+    try {
+        const ticket = await Ticket.findOne({
+            _id: req.params._id
+        })
+
+        // ticket can be seen to  user who created that ticket or engineer assigned to that ticket or (admin itself)
+
+        if (!ticket) {
+            res.status(400).send({
+                message: "ticket does not exist"
+            })
+        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId)) {
+            
+             res.status(200).send(ticket);
+
+        } else {
+            res.status(200).send({
+                message: "only user and engineer connected with this ticket can access this"
+            })
+        }
+
+
+
+    } catch (err) {
+        res.status(500).send({
+            message: "some internal server error occurred"
+        })
+    }
 }
 
 module.exports = {
