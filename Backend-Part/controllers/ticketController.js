@@ -15,12 +15,12 @@ const createTicket = async (req, res) => {
 
     }
 
-    const engineer = await User.findOne({
-        userType: constants.userTypes.engineer,
-        userStatus: constants.userStatus.approved
-    })
+    // const engineer = await User.findOne({
+    //     userType: constants.userTypes.engineer,
+    //     userStatus: constants.userStatus.approved
+    // })
 
-    ticketObject.assignee = engineer.userId
+    // ticketObject.assignee = engineer.userId
 
     try {
         const ticket = await Ticket.create(ticketObject);
@@ -36,10 +36,10 @@ const createTicket = async (req, res) => {
 
             // update the engineer
 
-            if (engineer) {
-                engineer.ticketsAssigned.push(ticket._id);
-                await engineer.save();
-            }
+            // if (engineer) {
+            //     engineer.ticketsAssigned.push(ticket._id);
+            //     await engineer.save();
+            // }
 
             res.status(200).send(ticket)
 
@@ -59,11 +59,17 @@ const updateTicket = async (req, res) => {
 
         // ticket can  be updated by the user who created that ticket or engineer assigned to that ticket or (admin itself)
 
+        let isAdmin = await User.findOne({
+            userId: req.userId,
+            userStatus: "APPROVED",
+            userType: "ADMIN"
+        })
+
         if (!ticket) {
             res.status(400).send({
                 message: "ticket does not exist"
             })
-        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee== req.userId)) {
+        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
             let updatePassed = req.body;
 
             let updatedTicket = await Ticket.findOneAndUpdate({
@@ -89,7 +95,7 @@ const updateTicket = async (req, res) => {
 }
 
 const getAllTickets = async (req, res) => {
- 
+
     try {
         let allTicketIds;
 
@@ -99,21 +105,34 @@ const getAllTickets = async (req, res) => {
             userId: req.userId
         }).select("ticketsCreated ticketsAssigned");
 
+        // if the request is coming from a admin
+
+        let isAdmin = await User.findOne({
+            userId: req.userId,
+            userStatus: "APPROVED",
+            userType: "ADMIN"
+        })
+
         if (Request.ticketsCreated && Request.ticketsCreated.length > 0) {
             allTicketIds = Request.ticketsCreated;
 
         } else if (Request.ticketsAssigned && Request.ticketsAssigned.length > 0) {
             allTicketIds = Request.ticketsAssigned;
         }
-     
+
+        let Tickets;
+
         if (allTicketIds) {
 
-            let Tickets = await Ticket.find({
+            Tickets = await Ticket.find({
                 _id: {
                     $in: allTicketIds
                 }
             })
             res.status(200).send(Tickets);
+        } else if (isAdmin) {
+            Tickets = await Ticket.find();
+            res.status(200).send(Tickets)
         } else {
             res.status(200).send({
                 message: "No Tickets exist for you"
@@ -121,7 +140,7 @@ const getAllTickets = async (req, res) => {
         }
     } catch (err) {
         res.status(500).send({
-            message:"some internal server error occurred"
+            message: "some internal server error occurred"
         })
     }
 
@@ -134,15 +153,23 @@ const getTicketById = async (req, res) => {
             _id: req.params._id
         })
 
-        // ticket can be seen to  user who created that ticket or engineer assigned to that ticket or (admin itself)
+        // ticket can be seen to  user who created that ticket or engineer assigned to that ticket or (admin itself);
+
+
+        let isAdmin = await User.findOne({
+            userId: req.userId,
+            userStatus: "APPROVED",
+            userType: "ADMIN"
+        });
+
 
         if (!ticket) {
             res.status(400).send({
                 message: "ticket does not exist"
             })
-        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId)) {
-            
-             res.status(200).send(ticket);
+        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
+
+            res.status(200).send(ticket);
 
         } else {
             res.status(200).send({
@@ -159,10 +186,46 @@ const getTicketById = async (req, res) => {
     }
 }
 
+const assignTicketToEngineer = async (req, res) => {
+    const { ticketId, engineerAssigned } = req.body;
+
+    let ticket = await Ticket.findById({
+        _id: ticketId
+    });
+    let engineer = await User.findOne({
+        userId: engineerAssigned
+    });
+
+    if (!ticket) {
+        return res.status(400).send({
+            message: "No such ticket exist"
+        })
+    } else if (!engineer) {
+        return res.status(400).send({
+            message: "No engineer exist with this given id"
+        })
+    } else if (ticket.assignee) {
+        return res.status(200).send({
+            message: "engineer already assigned to this ticket"
+        })
+    } else {
+        ticket.assignee = engineerAssigned;
+        engineer.ticketsAssigned.push(ticketId)
+
+        await ticket.save();
+        await engineer.save();
+         res.status(200).send({
+            message: "ticket is successfully assigned to given engineer"
+        })
+    }
+
+}
+
 module.exports = {
     createTicket,
     updateTicket, getAllTickets,
-    getTicketById
+    getTicketById,
+    assignTicketToEngineer
 }
 
 

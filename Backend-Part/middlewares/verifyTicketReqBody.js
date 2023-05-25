@@ -37,9 +37,24 @@ const validateTicketStatus = (req, res, next) => {
     next();
 }
 
+const validateTicketAssignment = (req, res, next) => {
+    
+    if (!req.body.ticketId) {
+       return res.status(400).send({
+            message:"please pass the ticket id to be assigned"
+        })
+    } else if (!req.body.engineerAssigned) {
+        return res.status(400).send({
+            message:"please pass the engineers id to be assigned"
+        })
+    }
+    next();
+}
+
 module.exports = {
     validateTicketBody,
-    validateTicketStatus
+    validateTicketStatus,
+    validateTicketAssignment
 }
 
 
