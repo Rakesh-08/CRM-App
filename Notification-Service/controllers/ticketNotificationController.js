@@ -4,6 +4,7 @@ const ticketNotificationModel = require("../models/ticketNotificationsModel");
 
 
 const acceptNotificationRequest = async (req, res) => {
+   
 
     const notificationObject = {
         ticketId: req.body.ticketId,
