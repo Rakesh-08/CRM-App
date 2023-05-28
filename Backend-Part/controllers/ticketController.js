@@ -1,7 +1,8 @@
 const Ticket = require("../models/ticketModel")
 const User = require("../models/userModel");
 const ticketRoutes = require("../routes/ticketRoutes");
-const constants = require("../utils/constants")
+const constants = require("../utils/constants");
+const sendEmail = require("../utils/notificationClient");
 
 const createTicket = async (req, res) => {
 
@@ -41,6 +42,11 @@ const createTicket = async (req, res) => {
             //     await engineer.save();
             // }
 
+
+            sendEmail(ticket._id, `ticket created with ticket id : ${ticket._id
+                }`, ticket.description, [user.email], ticket.reporter)
+
+
             res.status(200).send(ticket)
 
         }
@@ -59,11 +65,14 @@ const updateTicket = async (req, res) => {
 
         // ticket can  be updated by the user who created that ticket or engineer assigned to that ticket or (admin itself)
 
-        let isAdmin = await User.findOne({
-            userId: req.userId,
-            userStatus: "APPROVED",
-            userType: "ADMIN"
+        let caller = await User.findOne({
+            userId: req.userId
         })
+        let isAdmin = null;
+
+        if (caller.userStatus == "APPROVED" && caller.userType== "ADMIN") {
+            isAdmin = caller;
+        }
 
         if (!ticket) {
             res.status(400).send({
@@ -75,6 +84,11 @@ const updateTicket = async (req, res) => {
             let updatedTicket = await Ticket.findOneAndUpdate({
                 _id: ticket._id
             }, updatePassed, { new: true })
+
+
+            sendEmail(updatedTicket._id, `Update with : ${updatedTicket._id
+                } ticket id`, updatedTicket.description, [caller.email],updatedTicket.reporter)
+
 
             res.status(200).send(updatedTicket);
 
@@ -214,7 +228,7 @@ const assignTicketToEngineer = async (req, res) => {
 
         await ticket.save();
         await engineer.save();
-         res.status(200).send({
+        res.status(200).send({
             message: "ticket is successfully assigned to given engineer"
         })
     }
