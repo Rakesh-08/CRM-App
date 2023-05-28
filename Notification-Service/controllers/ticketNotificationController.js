@@ -4,7 +4,7 @@ const ticketNotificationModel = require("../models/ticketNotificationsModel");
 
 
 const acceptNotificationRequest = async (req, res) => {
-   
+
 
     const notificationObject = {
         ticketId: req.body.ticketId,
@@ -37,9 +37,10 @@ const acceptNotificationRequest = async (req, res) => {
 const getNotification = async (req, res) => {
 
     try {
-        let notification = await ticketNotificationModel.findOne({
-            _id: req.params.id
-        })
+        // let notification = await ticketNotificationModel.findOne({
+        //     _id: req.params.id
+        // })
+        let notification = await ticketNotificationModel.find();
 
         if (notification) {
             res.status(200).send(notification);
