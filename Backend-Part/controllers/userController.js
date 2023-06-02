@@ -16,7 +16,7 @@ const getAllUsers = async (req, res) => {
         }
     } catch (err) {
         res.status(500).send({
-            message: "some internal server occurred"
+            message: "some internal server error occurred"
         })
     }
 }
