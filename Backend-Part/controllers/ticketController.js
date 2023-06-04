@@ -15,15 +15,15 @@ const createTicket = async (req, res) => {
 
 
     }
+ try {
+    const engineer = await User.findOne({
+        userType: constants.userTypes.engineer,
+        userStatus: constants.userStatus.approved
+    })
 
-    // const engineer = await User.findOne({
-    //     userType: constants.userTypes.engineer,
-    //     userStatus: constants.userStatus.approved
-    // })
+    ticketObject.assignee = engineer?.userId
 
-    // ticketObject.assignee = engineer.userId
-
-    try {
+   
         const ticket = await Ticket.create(ticketObject);
 
         if (ticket) {
@@ -37,10 +37,10 @@ const createTicket = async (req, res) => {
 
             // update the engineer
 
-            // if (engineer) {
-            //     engineer.ticketsAssigned.push(ticket._id);
-            //     await engineer.save();
-            // }
+            if (engineer) {
+                engineer.ticketsAssigned.push(ticket._id);
+                await engineer.save();
+            }
 
 
             sendEmail(ticket._id, `ticket created with ticket id : ${ticket._id
@@ -52,7 +52,7 @@ const createTicket = async (req, res) => {
         }
     } catch (err) {
         return res.status(500).send({
-            message: "some internal error occurred"
+            message: "some internal server error occurred"
         })
     }
 }

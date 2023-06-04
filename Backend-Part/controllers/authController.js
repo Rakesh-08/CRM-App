@@ -41,7 +41,7 @@ const signup = async (req, res, next) => {
 
 
     } catch (e) {
-        console.log("while signing up this error encountered : " + e)
+
         res.status(500).send({
             message:'some internal error occurred while creating the user'
         })

@@ -16,7 +16,7 @@ const getAllUsers = async (req, res) => {
         }
     } catch (err) {
         res.status(500).send({
-            message: "some internal server occurred"
+            message: "some internal server error occurred"
         })
     }
 }
@@ -49,7 +49,7 @@ const updateUserById = async (req, res) => {
             }
         })
         if (invalidRequest) {
-            return res.status(400).send({
+            return res.status(401).send({
                 message: `you cannot update the ${invalidRequest}`
             })
         }
