@@ -49,7 +49,7 @@ const updateUserById = async (req, res) => {
             }
         })
         if (invalidRequest) {
-            return res.status(400).send({
+            return res.status(401).send({
                 message: `you cannot update the ${invalidRequest}`
             })
         }

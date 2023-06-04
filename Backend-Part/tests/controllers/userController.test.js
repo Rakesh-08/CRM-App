@@ -92,7 +92,7 @@ describe("FindById", () => {
         expect(res.send).toHaveBeenCalledWith(convertUserObject([ResponseArray[0]]))
 
     })
-    it("should get me all the users", async () => {
+    it("should fails as userId doesn't exist", async () => {
 
         req.params = { userId: "444" }
 
@@ -119,7 +119,7 @@ describe("updateUserById", () => {
 
     }
 
-    it("should get me all the users", async () => {
+    it("should update the user by id", async () => {
        
         
         req.body = objectPassed;
@@ -134,7 +134,7 @@ describe("updateUserById", () => {
 
     })
 
-    it("should get me all the users", async () => {
+    it("should fail as userid doesn't exist", async () => {
 
         req.body = objectPassed;
         req.params = { userId: "444" }
@@ -148,5 +148,45 @@ describe("updateUserById", () => {
             message:"user with 444 doesn't exist"
         })
     })
+
+    it("should fail as user is unauthorised to update the field", async() => {
+
+        req.body = objectPassed;
+        req.body.email="change@gmail.com"
+        req.params = { userId: "444" }
+
+        let spy5 = jest.spyOn(User, "findOneAndUpdate").mockReturnValue(ResponseArray[1])
+        await updateUserById(req, res)
+
+        expect(spy5).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(401)
+        expect(res.send).toHaveBeenCalledWith({
+            message: `you cannot update the email`
+        })
+    })
+
+    it("should fail due to server error", async() => {
+
+        req.body = {
+            name: "Mandal",
+            userType: "Engineer",
+            userStatus: "APPROVED"
+
+        };
+        req.params = { userId: "444" }
+
+        let spy5 = jest.spyOn(User, "findOneAndUpdate").mockImplementation(()=>Promise.reject(Error("error occcurred")))
+        await updateUserById(req, res)
+
+        expect(spy5).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(500)
+        expect(res.send).toHaveBeenCalledWith({
+            message: "some internal server error"
+        })
+
+        
+    })
+
+
 
 })
