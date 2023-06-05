@@ -1,5 +1,5 @@
 
 module.exports = {
     DB_NAME: "notifications_db",
-    DB_URL: "mongodb://127.0.0.1:27017/notifications_db"
+    DB_URL: "mongodb+srv://mandal:welcome01@crm-db.nc64gy0.mongodb.net/"
 }
