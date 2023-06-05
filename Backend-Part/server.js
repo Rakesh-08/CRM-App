@@ -63,8 +63,9 @@ require('./routes/authRoutes')(expressApp);
 require("./routes/userRoutes")(expressApp);
 require("./routes/ticketRoutes")(expressApp);
 
-expressApp.get("/", () => {
-    res.write("You are on your home Page and congrats your backend server is deployed successfully")
+expressApp.get("/", (req,res) => {
+    res.write("You are on your home Page and congrats your backend server is deployed successfully");
+    res.end();
 })
 
 
