@@ -37,10 +37,10 @@ const acceptNotificationRequest = async (req, res) => {
 const getNotification = async (req, res) => {
 
     try {
-        // let notification = await ticketNotificationModel.findOne({
-        //     _id: req.params.id
-        // })
-        let notification = await ticketNotificationModel.find();
+        let notification = await ticketNotificationModel.findOne({
+            _id: req.params.id
+        })
+      
 
         if (notification) {
             res.status(200).send(notification);
