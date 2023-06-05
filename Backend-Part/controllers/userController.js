@@ -5,8 +5,18 @@ const constants = require("../utils/constants")
 
 const getAllUsers = async (req, res) => {
 
+    let queryObject = {};
+
+    if (req.query.userStatus) {
+        queryObject.userStatus = req.query.userStatus;
+    }
+
+    if (req.query.userType) {
+        queryObject.userType = req.query.userType;
+    }
+
     try {
-        let allUsers = await User.find();
+        let allUsers = await User.find(queryObject);
 
         if (allUsers) {
             res.status(200).send({
