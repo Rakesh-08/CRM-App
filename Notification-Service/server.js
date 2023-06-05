@@ -4,7 +4,8 @@ const serverConfig = require("./configs/serverConfig");
 const express = require("express");
 const expressApp = express();
 const bodyParser = require("body-parser");
-  const emailBgJob= require("./crons/emailSenderBGjob")
+const emailBgJob = require("./crons/emailSenderBGjob")
+require("dotenv").config();
 
 expressApp.use(bodyParser.json());
 
