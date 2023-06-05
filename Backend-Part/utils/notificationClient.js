@@ -16,7 +16,7 @@ module.exports = (ticketId, subject, content, emailIds, requester) => {
         headers:{"Content-Type":"application/json"}
     }
  
-    client.post("http://localhost:9999/notificationService/api/v1/notification", args, (data,response) => {
+    client.post("https://notification-service-m4gi.onrender.com/notificationService/api/v1/notification", args, (data,response) => {
         
         console.log(data)
     })
