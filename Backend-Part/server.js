@@ -1,6 +1,5 @@
 
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 const serverConfig = require("./configs/serverConfig");
 const dbConfig = require("./configs/dbConfig");
@@ -13,8 +12,10 @@ const bodyParser = require("body-parser");
 const express = require('express');
 const expressApp = express();
 expressApp.use(bodyParser.json());
-expressApp.use(bodyParser.urlencoded({extended:true}))
+expressApp.use(bodyParser.urlencoded({ extended: true }))
 
+
+require("dotenv").config();
 // establish connectin with mongodb and check admin already there or not
 
 mongoose.connect(dbConfig.DB_URL)
