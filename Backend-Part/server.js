@@ -63,6 +63,10 @@ require('./routes/authRoutes')(expressApp);
 require("./routes/userRoutes")(expressApp);
 require("./routes/ticketRoutes")(expressApp);
 
+expressApp.get("/", () => {
+    res.write("You are on your home Page and congrats your backend server is deployed successfully")
+})
+
 
 // server should be up and running at port 8080
 
