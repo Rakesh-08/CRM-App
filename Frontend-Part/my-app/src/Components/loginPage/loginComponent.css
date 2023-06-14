@@ -1,0 +1,20 @@
+
+
+.form-box{
+  
+    width: 30vw;
+    background-color: rgb(226, 222, 222);
+   
+}
+
+.toggleBtn {
+      border: none;
+      background: transparent;
+}
+
+.toggleBtn:hover{
+    cursor: pointer;
+    color: blue;
+    transform: scale(1.1);
+    text-decoration: underline;
+}
