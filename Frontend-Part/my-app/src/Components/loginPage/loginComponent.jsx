@@ -25,12 +25,10 @@ export default function LoginComponent() {
 
     authApiCall(signUpapi, authInfo)
       .then((res) => {
-        setResMsg("sign up successfully")
-         setAuthInfo(initialState);
+         setResMsg("sign up successfully");
+         
       })
       .catch((err) => setResMsg("error occurred while signing up " + err.code));
-  
-
    
   };
 
@@ -43,8 +41,8 @@ export default function LoginComponent() {
 
     authApiCall(signInapi, credential)
       .then((data) => {
-        console.log(data)
-        setResMsg("Login successfully")
+        
+        setResMsg("Login successfully");
         setAuthInfo(initialState);
       })
       .catch((err) => {
@@ -63,13 +61,15 @@ export default function LoginComponent() {
         <div>
           <form onSubmit={showSignup ? signup : login}>
             {showSignup && (
-              <div className="  d-flex justify-content-around flex-wrap">
-                <label htmlFor="name">Name</label>
+              <div className="  row">
+                <label className="col-4" htmlFor="name">
+                  Name
+                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
-                  className=" m-2"
+                  className=" m-2 col-7 focus-ring border-white rounded-2"
                   value={authInfo.name}
                   onChange={(e) =>
                     setAuthInfo({ ...authInfo, name: e.target.value })
@@ -81,11 +81,13 @@ export default function LoginComponent() {
             )}
 
             {showSignup && (
-              <div className="  d-flex justify-content-around flex-wrap">
-                <label htmlFor="email">Email</label>
+              <div className=" row">
+                <label className="col-4" htmlFor="email">
+                  Email
+                </label>
                 <input
                   type="email"
-                  className="m-2"
+                  className="m-2 col-7 focus-ring border-white rounded-2"
                   id="email"
                   name="email"
                   value={authInfo.email}
@@ -98,11 +100,13 @@ export default function LoginComponent() {
               </div>
             )}
 
-            <div className="  d-flex justify-content-around flex-wrap">
-              <label htmlFor="userId">userId</label>
+            <div className=" row">
+              <label className="col-4" htmlFor="userId">
+                userId
+              </label>
               <input
                 type="text"
-                className="m-2"
+                className="m-2 col-7 focus-ring border-white rounded-2"
                 id="userId"
                 name="userId"
                 value={authInfo.userId}
@@ -113,35 +117,40 @@ export default function LoginComponent() {
                 required
               />
             </div>
-            <div className=" d-flex justify-content-around flex-wrap">
-              <label htmlFor="password">Password </label>
+            <div className="  row">
+              <label className="col-4" htmlFor="password">
+                Password{" "}
+              </label>
+
               <input
                 type="password"
-                className="m-2"
+                className="m-2 col-7 focus-ring  border-white rounded-2"
                 id="password"
                 name="password"
                 value={authInfo.password}
                 onChange={(e) =>
                   setAuthInfo({ ...authInfo, password: e.target.value })
                 }
-                placeholder="atleast 8 characters"
+                placeholder="min 8 characters"
                 required
               />
             </div>
 
             {showSignup && (
-              <div className=" d-flex justify-content-around flex-wrap">
-                <label htmlFor="role">Role</label>
+              <div className="row">
+                <label className="col-4" htmlFor="userType">
+                  user Type
+                </label>
                 <select
-                  id="role"
+                  id="userType"
                   value={authInfo.userType}
                   onChange={(e) => {
                     setAuthInfo({ ...authInfo, userType: e.target.value });
                   }}
-                  className="m-2 w-50"
+                  className="m-2 col-7  border-white rounded-2 "
                 >
                   <option value="CUSTOMER">CUSTOMER</option>
-                  <option value="ENGINNER">ENGINEER</option>
+                  <option value="ENGINEER">ENGINEER</option>
                 </select>
               </div>
             )}
@@ -163,6 +172,7 @@ export default function LoginComponent() {
             <button
               onClick={() => {
                 setShowSignup(!showSignup);
+                setResMsg("");
               }}
               className=" toggleBtn"
             >
