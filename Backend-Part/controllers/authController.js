@@ -10,7 +10,7 @@ const signup = async (req, res, next) => {
    
 
     if (currentUserType == constants.userTypes.customer) {
-        currentUserStatus= constants.userStatus.approved
+       let currentUserStatus= constants.userStatus.approved
     } 
 
     try {
@@ -19,7 +19,8 @@ const signup = async (req, res, next) => {
             userId: req.body.userId,
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, 8),
-            userType: req.body.userType
+            userType: req.body.userType,
+            userStatus: currentUserStatus
             
         })
 

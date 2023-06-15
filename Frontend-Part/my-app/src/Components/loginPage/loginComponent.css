@@ -2,8 +2,9 @@
 
 .form-box{
   
-    width: 30vw;
-    background-color: rgb(226, 222, 222);
+   min-width: 30vw;
+    background-color: rgb(244, 234, 234);
+    box-shadow: 2em 2em 2em  rgb(247, 84, 84);
    
 }
 
