@@ -7,13 +7,11 @@ const authConfig= require("../configs/authConfig")
 const signup = async (req, res, next) => {
 
     let currentUserType = req.body.userType;
-    let currentUserStatus = req.body.userStatus;
+   
 
     if (currentUserType == constants.userTypes.customer) {
         currentUserStatus= constants.userStatus.approved
-    } else {
-        currentUserStatus = constants.userStatus.pending;
-    }
+    } 
 
     try {
         const createUser = await User.create({
