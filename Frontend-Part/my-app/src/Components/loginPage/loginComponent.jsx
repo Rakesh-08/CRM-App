@@ -14,21 +14,24 @@ let initialState = {
   password: "",
   userType: "CUSTOMER",
 };
+let defaultPasswordVisibility={type:"password",class:"fa-eye-slash"}
 
 export default function LoginComponent() {
   let [authInfo, setAuthInfo] = useState(initialState);
   let [showSignup, setShowSignup] = useState(false);
-  let [resMsg, setResMsg] = useState("");
+  let [resMsg, setResMsg] = useState({
+    message: "",color:""});
+  let [eyeConfig,setEyeConfig]= useState(defaultPasswordVisibility)
 
   let signup = (e) => {
     e.preventDefault();
 
     authApiCall(signUpapi, authInfo)
       .then((res) => {
-         setResMsg("sign up successfully");
+         setResMsg({ message: "sign up successfully" , color:"text-success"});
          
       })
-      .catch((err) => setResMsg("error occurred while signing up " + err.code));
+      .catch((err) =>   setResMsg({ message: "sign up failed ! error occurred" , color:"text-danger"}));
    
   };
 
@@ -42,16 +45,30 @@ export default function LoginComponent() {
     authApiCall(signInapi, credential)
       .then((data) => {
         
-        setResMsg("Login successfully");
+         setResMsg({ message: "Login successfully", color: "text-success" });
         setAuthInfo(initialState);
       })
       .catch((err) => {
         console.log(err)
-        setResMsg("error occurred while logging in  " + err.code)
+         setResMsg({ message: "Login Failed! error occurred", color: "text-danger" });
       })
    
     
   };
+
+  let togglePasswordvisibility = () => {
+    let alternative = {
+      type: "text",
+      class:"fa-eye"
+    }
+   
+
+    if (eyeConfig.type === "password") {
+         setEyeConfig(alternative)
+    } else {
+      setEyeConfig(defaultPasswordVisibility)
+    }
+  }
 
   return (
     <div className="bg-info vh-100 d-flex justify-content-center align-items-center">
@@ -117,13 +134,12 @@ export default function LoginComponent() {
                 required
               />
             </div>
-            <div className="  row">
+            <div className=" row">
               <label className="col-4" htmlFor="password">
                 Password{" "}
               </label>
-
               <input
-                type="password"
+                type={eyeConfig.type}
                 className="m-2 col-7 focus-ring  border-white rounded-2"
                 id="password"
                 name="password"
@@ -134,6 +150,10 @@ export default function LoginComponent() {
                 placeholder="min 8 characters"
                 required
               />
+          
+                {" "}
+                <i className={`fa ${eyeConfig.class}`} id="togglePassword" onClick={togglePasswordvisibility}></i>
+             
             </div>
 
             {showSignup && (
@@ -172,7 +192,8 @@ export default function LoginComponent() {
             <button
               onClick={() => {
                 setShowSignup(!showSignup);
-                setResMsg("");
+                setResMsg("")
+                setEyeConfig(defaultPasswordVisibility)
               }}
               className=" toggleBtn"
             >
@@ -180,7 +201,7 @@ export default function LoginComponent() {
             </button>
           </p>
         </div>
-        <h6 className="text-success text-center">{resMsg}</h6>
+        <h6 className={`${resMsg.color} text-center`} >{resMsg.message}</h6>
       </div>
     </div>
   );
