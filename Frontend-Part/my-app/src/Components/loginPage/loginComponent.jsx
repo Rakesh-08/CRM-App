@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {useNavigate} from "react-router-dom"
 import "./loginComponent.css";
 import authApiCall from "../../apiCalls/auth";
 
@@ -19,9 +20,9 @@ let defaultPasswordVisibility={type:"password",class:"fa-eye-slash"}
 export default function LoginComponent() {
   let [authInfo, setAuthInfo] = useState(initialState);
   let [showSignup, setShowSignup] = useState(false);
-  let [resMsg, setResMsg] = useState({
-    message: "",color:""});
-  let [eyeConfig,setEyeConfig]= useState(defaultPasswordVisibility)
+  let [resMsg, setResMsg] = useState({ message: "",color:""});
+  let [eyeConfig, setEyeConfig] = useState(defaultPasswordVisibility);
+  let NavigateTo = useNavigate();
 
   let signup = (e) => {
     e.preventDefault();
@@ -31,7 +32,12 @@ export default function LoginComponent() {
          setResMsg({ message: "sign up successfully" , color:"text-success"});
          
       })
-      .catch((err) =>   setResMsg({ message: "sign up failed ! error occurred" , color:"text-danger"}));
+      .catch((err) => {
+        setResMsg({ message: "sign up failed ! error occurred", color: "text-danger" })
+        localStorage.setItem("errorCode",err.request.status)
+        NavigateTo("/Error")
+      }
+      )
    
   };
 
@@ -43,18 +49,32 @@ export default function LoginComponent() {
     }
 
     authApiCall(signInapi, credential)
-      .then((data) => {
+      .then((res) => {
+        let data = res.data;
         
+        if (data.accessToken) {
+          localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("username", data.name);
+          localStorage.setItem("userType", data.userType);
+
+          NavigateTo(`/${data.userType}`)
+            }
          setResMsg({ message: "Login successfully", color: "text-success" });
-        setAuthInfo(initialState);
+        
+       
       })
       .catch((err) => {
         console.log(err)
-         setResMsg({ message: "Login Failed! error occurred", color: "text-danger" });
+        setResMsg({ message: "Login Failed! error occurred", color: "text-danger" });
+        localStorage.setItem("errorCode",err.request.status)
+        NavigateTo("/Error")
       })
+    
    
     
   };
+
+
 
   let togglePasswordvisibility = () => {
     let alternative = {
@@ -192,6 +212,7 @@ export default function LoginComponent() {
             <button
               onClick={() => {
                 setShowSignup(!showSignup);
+                setAuthInfo(initialState);
                 setResMsg("")
                 setEyeConfig(defaultPasswordVisibility)
               }}
