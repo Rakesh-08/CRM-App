@@ -106,7 +106,7 @@ export default function LoginComponent() {
                   type="text"
                   id="name"
                   name="name"
-                  className=" m-2 col-7 focus-ring border-white rounded-2"
+                  className=" m-2 col-7 focus-ring border-white  rounded-2"
                   value={authInfo.name}
                   onChange={(e) =>
                     setAuthInfo({ ...authInfo, name: e.target.value })
