@@ -93,7 +93,7 @@ const updateTicket = async (req, res) => {
             res.status(200).send(updatedTicket);
 
         } else {
-            res.status(200).send({
+            res.status(401).send({
                 message: "only user and engineer connected with ticket can update this"
             })
         }
