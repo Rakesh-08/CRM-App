@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {useNavigate} from "react-router-dom"
 import "./loginComponent.css";
 import authApiCall from "../../apiCalls/auth";
@@ -23,6 +23,15 @@ export default function LoginComponent() {
   let [resMsg, setResMsg] = useState({ message: "",color:""});
   let [eyeConfig, setEyeConfig] = useState(defaultPasswordVisibility);
   let NavigateTo = useNavigate();
+
+  useEffect(() => {
+      
+    if (localStorage.getItem("accessToken")) {
+         NavigateTo(`/${localStorage.getItem("userType")}`)
+    }
+
+
+  },[])
 
   let signup = (e) => {
     e.preventDefault();
@@ -73,8 +82,6 @@ export default function LoginComponent() {
    
     
   };
-
-
 
   let togglePasswordvisibility = () => {
     let alternative = {

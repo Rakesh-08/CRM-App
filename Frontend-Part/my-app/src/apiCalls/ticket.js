@@ -13,7 +13,16 @@ let getTickets = async (url) => {
 
 }
 
-export default getTickets;
+let createTickets = async (url, obj) => {
+    
+    return await axios.post(base_url + url, obj, {
+        headers: {
+            "x-access-token": `${localStorage.getItem("accessToken")}`
+        }
+    })
+}
+
+export {getTickets,createTickets}
 
 
 
