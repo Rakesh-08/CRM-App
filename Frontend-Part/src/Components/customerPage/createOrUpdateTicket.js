@@ -13,7 +13,7 @@ let initialTicket = {
     priority:4,
      status:""
 }
-export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction,ticketDetails,setTicketDetails }) {
+export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction,fetchTicketsData,rowData }) {
     let [ticketInfo, setTicketInfo] = useState(initialTicket)
 
     let createTicket = (e) => {
@@ -25,18 +25,21 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
             ticketPriority:ticketInfo.priority}
         
         createTickets(postTicketApi, input).then((res) => {
-            let temp = ticketDetails;
-            temp.push(res.data);
-            setTicketDetails(temp)
-            alert(`your ticket is created with id : ${res.data._id} `)
+
+            fetchTicketsData();
+            setTicketInfo(initialTicket)
             setShowModal(false)
+            alert(`your ticket is created with id : ${res.data._id} `)
+           
+
         }).catch((err) => {
               alert(err.response.data.message)
         })
 
         
     }
-
+ 
+    
     let updateTicket = (e) => {
         
     }
@@ -46,7 +49,11 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
             
             <Modal
                 show={showModal}
-                onHide={() => setShowModal(false)}
+                onHide={() => {
+                    setShowModal(false)
+                    setUpdateModal(false)
+                    setTicketInfo(initialTicket)
+}}
                     centered
                     backdrop="static"
                 >
@@ -86,6 +93,8 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                             <button onClick={(e) => {
                                 e.preventDefault()
                                 setShowModal(false)
+                                setUpdateModal(false)
+                                setTicketInfo(initialTicket)
                             }
                             } className="btn btn-sm btn-secondary m-1">
                                     cancel

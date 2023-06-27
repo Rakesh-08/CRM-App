@@ -15,7 +15,8 @@ export default function CustomerPage() {
     let [ticketDetails, setTicketDetails] = useState([]);
     let [message, setMessage] = useState("")
     let [showModal, setShowModal] = useState(false);
-    let [updateModal,setUpdateModal]= useState(false)
+    let [updateModal, setUpdateModal] = useState(false);
+    let[rowData,setRowData]=useState({})
    
 
     useEffect(() => {
@@ -27,7 +28,7 @@ export default function CustomerPage() {
         fetchTicketsData();
    
 
-    },[ticketDetails])
+    },[])
 
       // wrapping an asynchronous funtion with async/await for inside useEffect
     let fetchTicketsData = async () => {
@@ -78,6 +79,10 @@ export default function CustomerPage() {
                     title="Tickets raised by you "
                     columns={columns}
                     data={ticketDetails}
+                    onRowClick={(e, rowData) => {
+                        setRowData(rowData)
+                        setShowModal(true)
+                    setUpdateModal(true)}}
                      />
             </div>
             <div className="text-center">
@@ -93,9 +98,9 @@ export default function CustomerPage() {
             
             <div>
                  { updateModal === true ?
-                    <CreateUpdateTicket showModal={showModal} setShowModal={setShowModal} updateModal={updateModal} setUpdateModal={setUpdateModal} title="update ticket" btnAction="update" ticketDetails={ticketDetails} setTicketDetails={setTicketDetails} /> :
+                    <CreateUpdateTicket showModal={showModal} setShowModal={setShowModal} updateModal={updateModal} setUpdateModal={setUpdateModal} title="update ticket" btnAction="update" fetchTicketsData={fetchTicketsData} rowData={rowData} /> :
 
-                    <CreateUpdateTicket showModal={showModal} setShowModal={setShowModal} updateModal={updateModal} setUpdateModal={setUpdateModal} title="create a new ticket" btnAction="create" ticketDetails={ticketDetails} setTicketDetails={setTicketDetails} />
+                    <CreateUpdateTicket showModal={showModal} setShowModal={setShowModal} updateModal={updateModal} setUpdateModal={setUpdateModal} title="create a new ticket" btnAction="create" fetchTicketsData={fetchTicketsData} rowData={rowData} />
                    }
                 
                 
