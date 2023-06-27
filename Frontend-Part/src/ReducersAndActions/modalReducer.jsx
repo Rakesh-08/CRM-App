@@ -12,7 +12,7 @@ const ModalReducer = ( state = initialTicket, action){
     switch (action.type) {
 
         case "MODAL_DATA":
-            return 
+            return ;
         
 
     }
