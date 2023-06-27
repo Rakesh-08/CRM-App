@@ -226,7 +226,7 @@ const deleteTicket = async (req, res) => {
                 _id:req.params._id 
             });
 
-            res.status(200).send(deleteResponse);
+            res.status(200).send({...deleteResponse,_id:ticket._id});
 
         } else {
             res.status(401).send({
