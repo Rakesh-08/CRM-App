@@ -21,8 +21,19 @@ const ModalReducer = (state = initialTicket, action) => {
   }
 };
 
+<<<<<<< HEAD
 let rootReducer = combineReducers({
      ModalInfo:ModalReducer
 })
 
 export { rootReducer };
+=======
+        case "MODAL_DATA":
+            return ;
+        
+
+    }
+}
+
+export {ModalReducer}
+>>>>>>> 23e6b20515d54e2806c2222f639b7d7690ab2348

@@ -75,7 +75,7 @@ const updateTicket = async (req, res) => {
         }
 
         if (!ticket) {
-            res.status(400).send({
+            res.status(404).send({
                 message: "ticket does not exist"
             })
         } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
@@ -148,7 +148,7 @@ const getAllTickets = async (req, res) => {
             Tickets = await Ticket.find();
             res.status(200).send(Tickets)
         } else {
-            res.status(200).send({
+            res.status(400).send({
                 message: "No Tickets exist for you"
             })
         }
@@ -178,7 +178,7 @@ const getTicketById = async (req, res) => {
 
 
         if (!ticket) {
-            res.status(400).send({
+            res.status(404).send({
                 message: "ticket does not exist"
             })
         } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
@@ -186,7 +186,7 @@ const getTicketById = async (req, res) => {
             res.status(200).send(ticket);
 
         } else {
-            res.status(200).send({
+            res.status(401).send({
                 message: "only user and engineer connected with this ticket can access this"
             })
         }
@@ -200,6 +200,50 @@ const getTicketById = async (req, res) => {
     }
 }
 
+const deleteTicket = async (req, res) => {
+
+    try {
+        const ticket = await Ticket.findOne({
+            _id: req.params._id
+        })
+
+        // ticket can be seen to  user who created that ticket or engineer assigned to that ticket or (admin itself);
+
+
+        let isAdmin = await User.findOne({
+            userId: req.userId,
+            userStatus: "APPROVED",
+            userType: "ADMIN"
+        });
+
+
+        if (!ticket) {
+            res.status(404).send({
+                message: "ticket does not exist"
+            })
+        } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
+            let deleteResponse= await  Ticket.deleteOne({
+                _id:req.params._id 
+            });
+
+            res.status(200).send({...deleteResponse,_id:ticket._id});
+
+        } else {
+            res.status(401).send({
+                message: "only user and engineer connected with this ticket can access this"
+            })
+        }
+
+
+
+    } catch (err) {
+        res.status(500).send({
+            message: "some internal server error occurred"
+        })
+    }
+}
+
+
 const assignTicketToEngineer = async (req, res) => {
     const { ticketId, engineerAssigned } = req.body;
 
@@ -211,15 +255,15 @@ const assignTicketToEngineer = async (req, res) => {
     });
 
     if (!ticket) {
-        return res.status(400).send({
+        return res.status(404).send({
             message: "No such ticket exist"
         })
     } else if (!engineer) {
-        return res.status(400).send({
+        return res.status(404).send({
             message: "No engineer exist with this given id"
         })
     } else if (ticket.assignee) {
-        return res.status(200).send({
+        return res.status(400).send({
             message: "engineer already assigned to this ticket"
         })
     } else {
@@ -239,6 +283,7 @@ module.exports = {
     createTicket,
     updateTicket, getAllTickets,
     getTicketById,
+    deleteTicket,
     assignTicketToEngineer
 }
 
