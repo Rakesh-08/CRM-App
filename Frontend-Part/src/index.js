@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createStore } from "redux";
-import { ModalReducer } from "./ReducersAndActions/modalReducer";
+import { rootReducer } from "./ReducersAndActions/modalReducer";
 import { Provider } from "react-redux";
 
-let store = createStore(ModalReducer);
+let store = createStore(rootReducer);
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

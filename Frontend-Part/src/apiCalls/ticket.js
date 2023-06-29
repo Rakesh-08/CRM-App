@@ -13,7 +13,7 @@ let getTickets = async (url) => {
 
 }
 
-let createTickets = async (url, obj) => {
+let createTicketsApi = async (url, obj) => {
     
     return await axios.post(base_url + url, obj, {
         headers: {
@@ -22,7 +22,25 @@ let createTickets = async (url, obj) => {
     })
 }
 
-export {getTickets,createTickets}
+let updateTicketApi = async (url, obj) => {
+    
+    return await axios.put(base_url + url, obj, {
+        headers: {
+            "x-access-token":localStorage.getItem("accessToken")
+        }
+    })
+}
+
+let deleteTicketApi = async (url) => {
+    
+    return await axios.delete(base_url + url, {
+        headers: {
+            "x-access-token":localStorage.getItem("accessToken")
+        }
+    })
+}
+
+export {getTickets,createTicketsApi,updateTicketApi,deleteTicketApi}
 
 
 

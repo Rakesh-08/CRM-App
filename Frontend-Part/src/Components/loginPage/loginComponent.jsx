@@ -20,8 +20,9 @@ let defaultPasswordVisibility={type:"password",class:"fa-eye-slash"}
 export default function LoginComponent() {
   let [authInfo, setAuthInfo] = useState(initialState);
   let [showSignup, setShowSignup] = useState(false);
-  let [resMsg, setResMsg] = useState({ message: "",color:""});
+  let [resMsg, setResMsg] = useState("");
   let [eyeConfig, setEyeConfig] = useState(defaultPasswordVisibility);
+  let [spinner,setSpinner]= useState(false)
   let NavigateTo = useNavigate();
 
   useEffect(() => {
@@ -35,23 +36,29 @@ export default function LoginComponent() {
 
   let signup = (e) => {
     e.preventDefault();
+    setSpinner(true)
 
     authApiCall(signUpapi, authInfo)
       .then((res) => {
-         setResMsg({ message: "sign up successfully" , color:"text-success"});
+        setSpinner(false);
+
+         setResMsg("Sign up successfully");
          
       })
       .catch((err) => {
-        setResMsg({ message: "sign up failed ! error occurred", color: "text-danger" })
+        console.log(err.response.data)
         localStorage.setItem("errorCode",err.request.status)
         NavigateTo("/Error")
       }
-      )
+    )
+    
+   
    
   };
 
   let login = (e) => {
     e.preventDefault();
+    setSpinner(true)
     let credential = {
       userId: authInfo.userId,
       password:authInfo.password
@@ -60,7 +67,7 @@ export default function LoginComponent() {
     authApiCall(signInapi, credential)
       .then((res) => {
         let data = res.data;
-        
+        setSpinner(false) 
         if (data.accessToken) {
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("username", data.name);
@@ -68,18 +75,16 @@ export default function LoginComponent() {
 
           NavigateTo(`/${data.userType}`)
             }
-         setResMsg({ message: "Login successfully", color: "text-success" });
         
        
       })
       .catch((err) => {
-        console.log(err)
-        setResMsg({ message: "Login Failed! error occurred", color: "text-danger" });
+        console.log(err.response.data)
         localStorage.setItem("errorCode",err.request.status)
         NavigateTo("/Error")
       })
     
-   
+  
     
   };
 
@@ -176,11 +181,12 @@ export default function LoginComponent() {
                 }
                 placeholder="min 8 characters"
                 required
-              />
-          
-                {" "}
-                <i className={`fa ${eyeConfig.class}`} id="togglePassword" onClick={togglePasswordvisibility}></i>
-             
+              />{" "}
+              <i
+                className={`fa ${eyeConfig.class}`}
+                id="togglePassword"
+                onClick={togglePasswordvisibility}
+              ></i>
             </div>
 
             {showSignup && (
@@ -211,6 +217,12 @@ export default function LoginComponent() {
           </form>
         </div>
 
+        {spinner && (
+          <div className="spinner-border text-warning" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        )}
+
         <div>
           <p className="my-2">
             {showSignup
@@ -220,8 +232,8 @@ export default function LoginComponent() {
               onClick={() => {
                 setShowSignup(!showSignup);
                 setAuthInfo(initialState);
-                setResMsg("")
-                setEyeConfig(defaultPasswordVisibility)
+                setResMsg("");
+                setEyeConfig(defaultPasswordVisibility);
               }}
               className=" toggleBtn"
             >
@@ -229,7 +241,7 @@ export default function LoginComponent() {
             </button>
           </p>
         </div>
-        <h6 className={`${resMsg.color} text-center`} >{resMsg.message}</h6>
+        <h6 className={`text-success text-center`}>{resMsg}</h6>
       </div>
     </div>
   );
