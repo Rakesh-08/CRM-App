@@ -14,7 +14,7 @@ let putTicketCall = "/crm/api/v1/tickets/";
 export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData }) {
    
 
-  let {ModalInfo} = useSelector((state) => state);
+  let ModalInfo = useSelector((state) => state.ModalInfo);
     let dispatch = useDispatch();
 
 
