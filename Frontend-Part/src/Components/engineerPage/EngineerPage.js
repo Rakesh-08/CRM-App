@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Dashboard from "../Dashboard/dashboard";
 
 
 export default function EngineerPage() {
@@ -12,10 +13,12 @@ export default function EngineerPage() {
         }
     })
 
-    let user = localStorage.getItem("userType")
+     let title = `welcome ${localStorage.getItem("username")}, lets resolve the queries and close the tickets`
+    
     return (
-        <div>  
-            <h2>{user && `welcome ${user}, how can we help you`} </h2>
+        <div> 
+            <Dashboard title={title}/>
+           
         </div>
     )
 }

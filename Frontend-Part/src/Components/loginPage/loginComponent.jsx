@@ -47,7 +47,8 @@ export default function LoginComponent() {
       })
       .catch((err) => {
         console.log(err.response.data)
-        localStorage.setItem("errorCode",err.request.status)
+        localStorage.setItem("errorCode", err.request.status)
+        localStorage.setItem("errMsg",err.response.data.message)
         NavigateTo("/Error")
       }
     )
@@ -80,7 +81,8 @@ export default function LoginComponent() {
       })
       .catch((err) => {
         console.log(err.response.data)
-        localStorage.setItem("errorCode",err.request.status)
+        localStorage.setItem("errorCode", err.request.status)
+        localStorage.setItem("errMsg",err.response.data.message)
         NavigateTo("/Error")
       })
     
@@ -224,7 +226,7 @@ export default function LoginComponent() {
         )}
 
         <div>
-          <p className="my-2">
+          <p className="my-2 text-primary text-underline">
             {showSignup
               ? " Already have an account ?"
               : "Don't have an account ?"}

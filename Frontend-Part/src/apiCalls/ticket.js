@@ -31,7 +31,7 @@ let updateTicketApi = async (url, obj) => {
     })
 }
 
-let deleteTicketApi = async (url) => {
+let deleteApiCall = async (url) => {
     
     return await axios.delete(base_url + url, {
         headers: {
@@ -40,7 +40,7 @@ let deleteTicketApi = async (url) => {
     })
 }
 
-export {getTickets,createTicketsApi,updateTicketApi,deleteTicketApi}
+export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall }
 
 
 

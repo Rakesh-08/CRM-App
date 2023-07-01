@@ -28,6 +28,9 @@ const ticketSchema = new mongoose.Schema({
    
     assignee: {
         type:String
+    },
+    comments: {
+        type:String
     }
     ,
     createdAt: {

@@ -16,7 +16,8 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
 
   let ModalInfo = useSelector((state) => state.ModalInfo);
     let dispatch = useDispatch();
-
+ 
+  
 
     let createTicket = (e) => {
         e.preventDefault();
@@ -103,7 +104,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
 
                         <div className="input-group m-2 row">
                             <label className="col-3" htmlFor="description"> Description</label>
-                            <input className="form-control mx-2" type="text" name="description" value={ModalInfo.description} onChange={(e) => {
+                            <input disabled={updateModal} className="form-control mx-2" type="text" name="description" value={ModalInfo.description} onChange={(e) => {
                                 dispatch({
                                     type: "onChange",
                                     payload: {
