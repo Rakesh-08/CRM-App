@@ -23,15 +23,20 @@ const ticketSchema = new mongoose.Schema({
         default:"OPEN"
     },
     reporter: {
-        type:String
+        type: String,
+        required:true
     },
    
     assignee: {
         type:String
     },
     comments: {
-        type:String
-    }
+        type: String
+    },
+    reporterName: {
+        type: String,
+        required:true
+     }
     ,
     createdAt: {
         type: Date,

@@ -5,9 +5,10 @@ import Dashboard from "../Dashboard/dashboard";
 
 export default function EngineerPage() {
     let NavigateTo = useNavigate();
+    let engineer = localStorage.getItem("userType")
 
     useEffect(() => {
-        if (!(localStorage.getItem("accessToken") && localStorage.getItem("userType") === "ENGINEER")) {
+        if (!(localStorage.getItem("accessToken") && engineer === "ENGINEER")) {
 
             NavigateTo("/")
         }
@@ -17,7 +18,7 @@ export default function EngineerPage() {
     
     return (
         <div> 
-            <Dashboard title={title}/>
+            <Dashboard title={title} engineer={engineer} />
            
         </div>
     )

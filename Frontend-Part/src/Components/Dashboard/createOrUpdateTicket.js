@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 let postTicketApi = "/crm/api/v1/tickets"
 let putTicketCall = "/crm/api/v1/tickets/";
 
-export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData }) {
+export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,engineer }) {
    
 
   let ModalInfo = useSelector((state) => state.ModalInfo);
@@ -53,6 +53,10 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
             status:ModalInfo.status
         }
 
+        if (ModalInfo.comments) {
+            update.comments=ModalInfo.comments
+        }
+
 
         updateTicketApi(putTicketCall+ ModalInfo._id, update)
             .then((res) => {
@@ -67,6 +71,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
             })
     }
 
+    
     return (
         <div>
 
@@ -85,7 +90,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                 <Modal.Body>
                     <form onSubmit={updateModal == true ? updateTicket : createTicket}>
 
-                        {updateModal && <p> ID : {ModalInfo._id }</p>}     
+                        {updateModal && <p> ID :<span className="text-success"> {ModalInfo._id }</span></p>}     
 
                         <div className="input-group m-2 row">
                             <label className="col-3" htmlFor="title"> Title</label>
@@ -126,9 +131,26 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                                 })
                             }}>
                                 <option value="OPEN">OPEN</option>
+                                    <option disabled={!engineer} value="IN_PROGRESS"> IN PROGRESS</option>
+                                    <option disabled={!engineer} value= "BLOCKED">BLOCKED</option>
                                 <option value="CLOSED">CLOSED</option>
                             </select>
                         </div>}
+                        {engineer &&<div className="input-group m-2 row">
+                            <label className="col-3" htmlFor="comments"> Comments </label>
+
+
+                            <input  className={`form-control mx-2 $`} type="text" name="comments" value={ModalInfo.comments} onChange={(e) => {
+                                dispatch({
+                                    type: "onChange",
+                                    payload: {
+                                        key: e.target.name,
+                                        value: e.target.value
+                                    }
+                                })
+                            }} />
+                        </div>
+ }
 
                         <div className="input-group m-2 row">
                             <label className="col-6" htmlFor="ticketPriority"> Ticket Priority</label>

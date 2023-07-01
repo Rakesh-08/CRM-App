@@ -9,7 +9,7 @@ let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
 
 
-export default function Dashboard({ title }) {
+export default function Dashboard({ title,engineer }) {
     
   let NavigateTo = useNavigate();
   let [ticketDetails, setTicketDetails] = useState([]);
@@ -29,8 +29,8 @@ export default function Dashboard({ title }) {
   }, []);
 
   let dispatch = useDispatch();
-  let userType = localStorage.getItem("userType")
-    
+ 
+    console.log(ticketDetails)
 
      // set different status of tickets
     let ticketDistribution = (data) => {
@@ -63,7 +63,7 @@ export default function Dashboard({ title }) {
         setMessage(err.response.data.message);
       });
     };
-    console.log(ticketDetails)
+    
 
  // logout function
   let logoutFn = () => {
@@ -77,7 +77,7 @@ export default function Dashboard({ title }) {
 
     // toggle between reporter or assignee on same table
     
-    let user = userType == "CUSTOMER" ? { title: "ASSIGNEE", field: "assignee" } : { title: "REPORTER", field: "reporter" };
+    let user = !engineer ? { title: "ASSIGNEE", field: "assignee" } : { title: "REPORTER", field: "reporter" };
 
     // columns of table with its label
   let columns = [
@@ -116,9 +116,7 @@ export default function Dashboard({ title }) {
         </button>
       </div>
       <div className="mx-4  text-center">
-        <h2 className="text-info lead fs-4">
-             {title}
-        </h2>
+        <h2 className="text-info lead fs-4">{title}</h2>
         <p> Take a look at all your tickets below !</p>
       </div>
       <h4 className="m-4 lead fs-4">
@@ -129,10 +127,14 @@ export default function Dashboard({ title }) {
       </h4>
 
       <div className="d-flex justify-content-around px-4 m-4">
-        <InfoBox info="OPEN" count={ticketStatus.OPEN} />
-        <InfoBox info="IN PROGRESS" count={ticketStatus.IN_PROGRESS} />
-        <InfoBox info="BLOCKED" count={ticketStatus.BLOCKED} />
-        <InfoBox info="CLOSED" count={ticketStatus.CLOSED} />
+        <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
+        <InfoBox
+          info="IN PROGRESS"
+          count={ticketStatus.IN_PROGRESS}
+          color="green"
+        />
+        <InfoBox info="BLOCKED" count={ticketStatus.BLOCKED} color="grey" />
+        <InfoBox info="CLOSED" count={ticketStatus.CLOSED} color="purple" />
       </div>
 
       <div className=" mx-4 p-2 h-100">
@@ -152,8 +154,7 @@ export default function Dashboard({ title }) {
           options={{
             actionsColumnIndex: -1,
           }}
-                  onRowClick={(e, rowData) => {
-              
+          onRowClick={(e, rowData) => {
             dispatch({
               type: "currentRow",
               payload: {
@@ -162,6 +163,7 @@ export default function Dashboard({ title }) {
                 priority: rowData.ticketPriority,
                 status: rowData.status,
                 _id: rowData._id,
+                comments: rowData.comments,
               },
             });
 
@@ -172,14 +174,18 @@ export default function Dashboard({ title }) {
       </div>
       <div className="text-center">
         <hr className=" bg-light" />
-              {userType == "CUSTOMER" &&<><p className=" text-warning">{message}</p>
-        <p>Facing any issue ? Raise a ticket</p>
-        <button
-          onClick={() => setShowModal(true)}
-          className="btn btn-lg btn-success "
-        >
-          Raise Ticket
-        </button> </>}
+        {!engineer && (
+          <>
+            <p className=" text-warning">{message}</p>
+            <p>Facing any issue ? Raise a ticket</p>
+            <button
+              onClick={() => setShowModal(true)}
+              className="btn btn-lg btn-success "
+            >
+              Raise Ticket
+            </button>{" "}
+          </>
+        )}
       </div>
 
       <div>
@@ -189,9 +195,10 @@ export default function Dashboard({ title }) {
             setShowModal={setShowModal}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
-            title="update ticket"
+            title="Update ticket"
             btnAction="update"
             fetchTicketsData={fetchTicketsData}
+            engineer={engineer}
           />
         ) : (
           <CreateUpdateTicket
@@ -199,7 +206,7 @@ export default function Dashboard({ title }) {
             setShowModal={setShowModal}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
-            title="create a new ticket"
+            title="Create new ticket"
             btnAction="create"
             fetchTicketsData={fetchTicketsData}
           />
@@ -209,11 +216,12 @@ export default function Dashboard({ title }) {
   );
 }
 
-let InfoBox = ({ info, count }) => {
+let InfoBox = ({ info, count, color }) => {
+  
   return (
     <div
       className=" d-flex align-items-center justify-content-center rounded-2 p-1 m-2 "
-      style={{ backgroundColor: "purple", minWidth: "15vw" }}
+      style={{ backgroundColor:[color], minWidth: "15vw" }}
     >
       <div className="text-center p-2 ">
         <h3 className=" text-warning fst-italic" style={{ fontSize: "100%" }}>

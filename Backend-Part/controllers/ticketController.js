@@ -11,9 +11,8 @@ const createTicket = async (req, res) => {
         ticketPriority: req.body.ticketPriority,
         description: req.body.description,
         status: req.body.status,
-        comments:req.body.comments,
+        comments: req.body.comments,
         reporter: req.userId, // this is coming from authjwt middleware
-
 
     }
  try {
@@ -21,18 +20,21 @@ const createTicket = async (req, res) => {
         userType: constants.userTypes.engineer,
         userStatus: constants.userStatus.approved
     })
+     
+     // update the customer 
+     const user = await User.findOne({
+         userId: req.userId
+     })
 
-    ticketObject.assignee = engineer?.userId
+     ticketObject.assignee = engineer?.userId;
+     ticketObject.reporterName = user.name;
 
    
         const ticket = await Ticket.create(ticketObject);
 
         if (ticket) {
 
-            // update the customer 
-            const user = await User.findOne({
-                userId: req.userId
-            })
+           
             user.ticketsCreated.push(ticket._id);
             await user.save();
 
