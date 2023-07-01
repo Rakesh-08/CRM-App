@@ -11,10 +11,7 @@ const createTicket = async (req, res) => {
         ticketPriority: req.body.ticketPriority,
         description: req.body.description,
         status: req.body.status,
-<<<<<<< HEAD
         comments: req.body.comments,
-=======
->>>>>>> 54d376bb8ae2986edabf61e421524a41e6bb868a
         reporter: req.userId, // this is coming from authjwt middleware
 
     }
