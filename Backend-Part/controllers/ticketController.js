@@ -26,7 +26,12 @@ const createTicket = async (req, res) => {
          userId: req.userId
      })
 
-     ticketObject.assignee = engineer?.userId;
+     if (engineer) {
+         ticketObject.assignee = engineer.userId;
+         ticketObject.assigneeName = engineer.name;
+     }
+
+     
      ticketObject.reporterName = user.name;
 
    

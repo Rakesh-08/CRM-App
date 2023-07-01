@@ -26,17 +26,23 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         required:true
     },
-   
+    
+    reporterName: {
+    type: String,
+    required: true
+}
+   ,
     assignee: {
-        type:String
+        type: String,
+         required:true
+    },
+    assigneeName: {
+        type: String,
+        required:true
     },
     comments: {
         type: String
-    },
-    reporterName: {
-        type: String,
-        required:true
-     }
+    }
     ,
     createdAt: {
         type: Date,
