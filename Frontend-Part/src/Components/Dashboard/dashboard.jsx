@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import CreateUpdateTicket from "./createOrUpdateTicket";
 import { getTickets, deleteApiCall } from "../../apiCalls/ticket";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EmailIcon from '@mui/icons-material/Email';
+
+
 
 let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
@@ -30,7 +34,7 @@ export default function Dashboard({ title,engineer }) {
 
   let dispatch = useDispatch();
  
-    console.log(ticketDetails)
+    
 
      // set different status of tickets
     let ticketDistribution = (data) => {
@@ -77,7 +81,7 @@ export default function Dashboard({ title,engineer }) {
 
     // toggle between reporter or assignee on same table
     
-    let user = !engineer ? { title: "ASSIGNEE", field: "assignee" } : { title: "REPORTER", field: "reporter" };
+    let user = !engineer ? { title: "ASSIGNEE", field: "assigneeName" } : { title: "REPORTER", field: "reporterName" };
 
     // columns of table with its label
   let columns = [
@@ -108,6 +112,11 @@ export default function Dashboard({ title,engineer }) {
     }
   };
 
+  // send email function
+  let sendEmail = (data) => {
+    
+  }
+
   return (
     <div className=" bg-dark text-white pb-5 ">
       <div className="d-flex justify-content-end">
@@ -126,7 +135,7 @@ export default function Dashboard({ title,engineer }) {
         </span>
       </h4>
 
-      <div className="d-flex justify-content-around px-4 m-4">
+      <div className="d-flex flex-wrap justify-content-around px-4 m-4">
         <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
         <InfoBox
           info="IN PROGRESS"
@@ -142,9 +151,16 @@ export default function Dashboard({ title,engineer }) {
           title="Tickets raised by you "
           columns={columns}
           data={ticketDetails}
-          actions={[
+          actions={[{
+            icon: EmailIcon,
+           tooltip: "Send Email",
+            onClick: (event, rowData) => {
+              sendEmail(rowData);
+            }
+
+          },
             {
-              icon: "D",
+              icon: DeleteIcon,
               tooltip: "Delete Ticket",
               onClick: (event, rowData) => {
                 deleteTicket(rowData._id);

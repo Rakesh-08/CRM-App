@@ -91,12 +91,22 @@ const updateTicket = async (req, res) => {
 
             let updatedTicket = await Ticket.findOneAndUpdate({
                 _id: ticket._id
-            }, updatePassed, { new: true })
+            }, updatePassed, { new: true });
+
+            if (ticket.reporter !== req.userId) {
+                
+                let content = `Hello sir, 
+            there was an update in your ticket ,to look into update visit the support page.
+        
+           regards
+           CRM support service}`
+
+                sendEmail(updatedTicket._id, `Update in ticket id : ${updatedTicket._id} `, content, [caller.email], updatedTicket.reporter)
 
 
-            sendEmail(updatedTicket._id, `Update with : ${updatedTicket._id
-                } ticket id`, updatedTicket.description, [caller.email],updatedTicket.reporter)
-
+            }
+  
+           
 
             res.status(200).send(updatedTicket);
 
