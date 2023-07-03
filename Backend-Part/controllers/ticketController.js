@@ -80,9 +80,11 @@ const updateTicket = async (req, res) => {
         let customerEmail = caller.email;
 
         if (caller.userId !== ticket.reporter) {
-          customerEmail=  await User.findOne({
+            let customer = await User.findOne({
                 userId: ticket.reporter
-                 }).select({email:1,_id:0}).email
+            }).select({ email: 1, _id: 0 });
+
+            customerEmail = customer.email;
         }
         let isAdmin = null;
 
@@ -94,12 +96,16 @@ const updateTicket = async (req, res) => {
             res.status(404).send({
                 message: "ticket does not exist"
             })
+
         } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
+
+
             let updatePassed = req.body;
 
             let updatedTicket = await Ticket.findOneAndUpdate({
                 _id: ticket._id
             }, updatePassed, { new: true });
+
 
             if (ticket.reporter !== req.userId) {
                 
@@ -310,7 +316,9 @@ const assignTicketToEngineer = async (req, res) => {
 
 let sendEmailToCustomer = async (req, res) => {
     
-  let  { userId, subject, content }= req.body;
+
+    try {
+  let  {ticketId, userId, subject, content }= req.body;
 
     let requester = await User.findOne({
         userId:req.userId
@@ -324,6 +332,19 @@ let sendEmailToCustomer = async (req, res) => {
     let customer = await User.findOne({
         userId:userId
     })
+
+    sendEmail(ticketId, subject, content, [customer.email], userId)
+    
+    res.status(200).send({
+        message:"email send successfully"
+    })
+        
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({
+            message: "some internal servor error occurred"
+        })
+    }
 
 }
 
