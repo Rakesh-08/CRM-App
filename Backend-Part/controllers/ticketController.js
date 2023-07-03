@@ -76,6 +76,14 @@ const updateTicket = async (req, res) => {
         let caller = await User.findOne({
             userId: req.userId
         })
+
+        let customerEmail = caller.email;
+
+        if (caller.userId !== ticket.reporter) {
+          customerEmail=  await User.findOne({
+                userId: ticket.reporter
+                 }).project({email:1,_id:0})
+        }
         let isAdmin = null;
 
         if (caller.userStatus == "APPROVED" && caller.userType== "ADMIN") {
@@ -101,7 +109,7 @@ const updateTicket = async (req, res) => {
            regards
            CRM support service}`
 
-                sendEmail(updatedTicket._id, `Update in ticket id : ${updatedTicket._id} `, content, [caller.email], updatedTicket.reporter)
+                sendEmail(updatedTicket._id, `Update in ticket id : ${updatedTicket._id} `, content, [customerEmail], updatedTicket.reporter)
 
 
             }

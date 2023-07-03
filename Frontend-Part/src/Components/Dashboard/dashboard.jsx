@@ -6,6 +6,7 @@ import CreateUpdateTicket from "./createOrUpdateTicket";
 import { getTickets, deleteApiCall } from "../../apiCalls/ticket";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
+import { Modal } from "react-bootstrap";
 
 
 
@@ -27,6 +28,7 @@ export default function Dashboard({ title,engineer }) {
     CLOSED: 0,
     Total: 0,
   });
+  let [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     fetchTicketsData();
@@ -81,7 +83,18 @@ export default function Dashboard({ title,engineer }) {
 
     // toggle between reporter or assignee on same table
     
-    let user = !engineer ? { title: "ASSIGNEE", field: "assigneeName" } : { title: "REPORTER", field: "reporterName" };
+  let user = !engineer ? { title: "ASSIGNEE", field: "assigneeName" } : { title: "REPORTER", field: "reporterName" };
+  
+  let sendEmailAction = engineer
+    ? {
+        icon: EmailIcon,
+        tooltip: "Send Email",
+      onClick: (event, rowData) => {
+           setShowEmailModal(true)
+      }
+        
+      }
+    : null;
 
     // columns of table with its label
   let columns = [
@@ -113,9 +126,9 @@ export default function Dashboard({ title,engineer }) {
   };
 
   // send email function
-  let sendEmail = (data) => {
-    
-  }
+  let sendEmailFn = () => {
+     
+   }
 
   return (
     <div className=" bg-dark text-white pb-5 ">
@@ -151,14 +164,8 @@ export default function Dashboard({ title,engineer }) {
           title="Tickets raised by you "
           columns={columns}
           data={ticketDetails}
-          actions={[{
-            icon: EmailIcon,
-           tooltip: "Send Email",
-            onClick: (event, rowData) => {
-              sendEmail(rowData);
-            }
-
-          },
+          actions={[
+            sendEmailAction,
             {
               icon: DeleteIcon,
               tooltip: "Delete Ticket",
@@ -201,6 +208,37 @@ export default function Dashboard({ title,engineer }) {
               Raise Ticket
             </button>{" "}
           </>
+        )}
+      </div>
+
+      <div>
+        {showEmailModal && (
+          <Modal
+            show={showEmailModal}
+            onHide={() => {
+              setShowEmailModal(false);
+            }}
+            centered
+            backdrop="static"
+          >
+            <Modal.Header className="text-primary" closeButton>Send Email to customer</Modal.Header>
+            <Modal.Body>
+              <form>
+                <div className="input-group m-2">
+                  <label>Subject</label>
+                  <input className="form-control mx-2 p-1" type="text" />
+                </div>
+                <div className="input-group">
+                  <label>Content</label>
+                  <textarea className="form-control mx-3 p-1"></textarea>
+                </div>
+                <div className="d-flex justify-content-end m-2 ">
+                  <button onClick={()=>setShowEmailModal(false)} className="m-1 btn btn-secondary">Back</button>
+                  <button onClick={sendEmailFn} className="m-1 btn btn-success">send Email</button>
+                </div>
+              </form>
+            </Modal.Body>
+          </Modal>
         )}
       </div>
 
