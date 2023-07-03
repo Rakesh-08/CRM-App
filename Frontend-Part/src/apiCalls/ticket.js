@@ -40,7 +40,16 @@ let deleteApiCall = async (url) => {
     })
 }
 
-export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall }
+let sendEmail = async (url, obj) => {
+
+    return await axios.post(base_url + url, obj, {
+        headers: {
+            "x-access-token": `${localStorage.getItem("accessToken")}`
+        }
+    })
+}
+
+export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall,sendEmail }
 
 
 

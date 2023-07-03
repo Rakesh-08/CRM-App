@@ -46,6 +46,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
 
     let updateTicket = (e) => {
         e.preventDefault();
+
         let update = {
             title: ModalInfo.title,
             description: ModalInfo.description,

@@ -109,13 +109,10 @@ const updateTicket = async (req, res) => {
 
             if (ticket.reporter !== req.userId) {
                 
-                let content = `Hello sir, 
-            there was an update in your ticket ,to look into update visit the support page.
-        
-           regards
-           CRM support service}`
+                let content = `Hello sir,/n there was an update in your ticket ,to look into update visit the support page. /n regards
+           CRM support service`
                
-                console.log(customerEmail)
+               
 
                 sendEmail(updatedTicket._id, `Update in ticket id : ${updatedTicket._id} `, content, [customerEmail], updatedTicket.reporter)
 

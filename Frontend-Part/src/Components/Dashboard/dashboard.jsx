@@ -3,15 +3,24 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import CreateUpdateTicket from "./createOrUpdateTicket";
-import { getTickets, deleteApiCall } from "../../apiCalls/ticket";
+import { getTickets, deleteApiCall, sendEmail } from "../../apiCalls/ticket";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
 import { Modal } from "react-bootstrap";
 
 
 
+
 let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
+let sendEmailApi = "/crm/api/v1/sendEmail";
+
+let initialEmailObject = {
+  userId: "",
+  ticketId: "",
+  subject: "",
+  content:""
+}
 
 
 export default function Dashboard({ title,engineer }) {
@@ -29,7 +38,7 @@ export default function Dashboard({ title,engineer }) {
     Total: 0,
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
-  let [Ids,setIds] = useState({});
+  let [emailObject,setEmailObject] = useState(initialEmailObject);
 
   useEffect(() => {
     fetchTicketsData();
@@ -92,7 +101,7 @@ export default function Dashboard({ title,engineer }) {
         tooltip: "Send Email",
       onClick: (event, rowData) => {
         setShowEmailModal(true)
-          setIds({ticketId:rowData._id,userId:rowData.reporter})
+          setEmailObject({ticketId:rowData._id,userId:rowData.reporter})
       }
         
       }
@@ -128,8 +137,26 @@ export default function Dashboard({ title,engineer }) {
   };
 
   // send email function
-  let sendEmailFn = () => {
-       console.log(Ids)
+  let sendEmailFn = (e) => {
+    e.preventDefault();
+
+    let obj = {
+      userId: emailObject.userId,
+      ticketId: emailObject.ticketId,
+      subject: emailObject.subject,
+      content:emailObject.content
+    }
+   
+   
+    sendEmail(sendEmailApi, obj).then((response) => {
+      setMessage(response.data.message)
+      setTimeout(() => {
+          setMessage("")
+      },5000)
+    }).catch(err=>console.log(err.response.data))
+
+    setShowEmailModal(false)
+
    }
 
   return (
@@ -199,9 +226,9 @@ export default function Dashboard({ title,engineer }) {
       </div>
       <div className="text-center">
         <hr className=" bg-light" />
+        <p className=" text-warning">{message}</p>
         {!engineer && (
           <>
-            <p className=" text-warning">{message}</p>
             <p>Facing any issue ? Raise a ticket</p>
             <button
               onClick={() => setShowModal(true)}
@@ -223,21 +250,51 @@ export default function Dashboard({ title,engineer }) {
             centered
             backdrop="static"
           >
-            <Modal.Header className="text-primary" closeButton>Send Email to customer</Modal.Header>
+            <Modal.Header className="text-primary" closeButton>
+              Send Email to customer
+            </Modal.Header>
             <Modal.Body>
-              <form>
+              <form onSubmit={sendEmailFn}>
                 <div className="input-group m-2">
                   <label>Subject</label>
-                  <input className="form-control mx-2 p-1" type="text" />
+                  <input
+                    className="form-control mx-2 p-1"
+                    type="text"
+                    value={emailObject.subject}
+                    onChange={(e) =>
+                      setEmailObject({
+                        ...emailObject,
+                        subject: e.target.value,
+                      })
+                    }
+                  />
                 </div>
                 <div className="input-group">
                   <label>Content</label>
-                  <textarea className="form-control mx-3 p-1"></textarea>
+                  <textarea
+                    className="form-control mx-3 p-1"
+                    value={emailObject.content}
+                    onChange={(e) =>
+                      setEmailObject({
+                        ...emailObject,
+                        content: e.target.value,
+                      })
+                    }
+                  ></textarea>
                 </div>
                 <div className="d-flex justify-content-end m-2 ">
-                  <button onClick={() => setShowEmailModal(false)
-                  } className="m-1 btn btn-secondary">Back</button>
-                  <button onClick={sendEmailFn} className="m-1 btn btn-success">send Email</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowEmailModal(false);
+                    }}
+                    className="m-1 btn btn-secondary"
+                  >
+                    Back
+                  </button>
+                  <button type="submit" className="m-1 btn btn-success">
+                    send Email
+                  </button>
                 </div>
               </form>
             </Modal.Body>
