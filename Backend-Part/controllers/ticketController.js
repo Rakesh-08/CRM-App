@@ -82,7 +82,7 @@ const updateTicket = async (req, res) => {
         if (caller.userId !== ticket.reporter) {
           customerEmail=  await User.findOne({
                 userId: ticket.reporter
-                 }).select({email:1,_id:0})
+                 }).select({email:1,_id:0}).email
         }
         let isAdmin = null;
 

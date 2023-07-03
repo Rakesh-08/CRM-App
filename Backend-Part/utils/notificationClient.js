@@ -21,7 +21,7 @@ module.exports = (ticketId, subject, content, emailIds, requester) => {
     client.post(`${baseUrl}/notificationService/api/v1/notification`, args, (data,response) => {
         
         console.log(data)
-        console.log(response)
+        
     })
 
  
