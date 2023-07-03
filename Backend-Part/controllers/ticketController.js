@@ -109,6 +109,7 @@ const updateTicket = async (req, res) => {
            regards
            CRM support service}`
                
+                console.log(customerEmail)
 
                 sendEmail(updatedTicket._id, `Update in ticket id : ${updatedTicket._id} `, content, [customerEmail], updatedTicket.reporter)
 
