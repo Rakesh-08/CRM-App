@@ -14,6 +14,8 @@ const acceptNotificationRequest = async (req, res) => {
         requester: req.body.requester
     }
 
+    console.log(notificationObject)
+
     try {
         const notification = await ticketNotificationModel.create(notificationObject);
 
@@ -25,7 +27,7 @@ const acceptNotificationRequest = async (req, res) => {
         }
 
     } catch (err) {
-
+        console.log(err)
         res.status(500).send({
             message: "some internal server error occurred"
         })
