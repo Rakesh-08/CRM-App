@@ -82,7 +82,7 @@ const updateTicket = async (req, res) => {
         if (caller.userId !== ticket.reporter) {
           customerEmail=  await User.findOne({
                 userId: ticket.reporter
-                 }).project({email:1,_id:0})
+                 }).select({email:1,_id:0})
         }
         let isAdmin = null;
 
@@ -306,12 +306,34 @@ const assignTicketToEngineer = async (req, res) => {
 
 }
 
+
+let sendEmailToCustomer = async (req, res) => {
+    
+  let  { userId, subject, content }= req.body;
+
+    let requester = await User.findOne({
+        userId:req.userId
+    })
+
+    if (requester.userType === constants.userTypes.customer) {
+        return res.status(401).send({
+            message:"unauthorised request ! you are not allowed to send email"
+        })
+    }
+    let customer = await User.findOne({
+        userId:userId
+    })
+
+}
+
+
 module.exports = {
     createTicket,
     updateTicket, getAllTickets,
     getTicketById,
     deleteTicket,
-    assignTicketToEngineer
+    assignTicketToEngineer,
+    sendEmailToCustomer
 }
 
 

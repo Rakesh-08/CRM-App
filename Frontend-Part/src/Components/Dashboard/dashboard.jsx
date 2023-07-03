@@ -29,6 +29,7 @@ export default function Dashboard({ title,engineer }) {
     Total: 0,
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
+  let [customerUserId, setCustomerUserId] = useState("");
 
   useEffect(() => {
     fetchTicketsData();
@@ -90,7 +91,8 @@ export default function Dashboard({ title,engineer }) {
         icon: EmailIcon,
         tooltip: "Send Email",
       onClick: (event, rowData) => {
-           setShowEmailModal(true)
+        setShowEmailModal(true)
+         setCustomerUserId(rowData.reporter)
       }
         
       }
@@ -233,7 +235,8 @@ export default function Dashboard({ title,engineer }) {
                   <textarea className="form-control mx-3 p-1"></textarea>
                 </div>
                 <div className="d-flex justify-content-end m-2 ">
-                  <button onClick={()=>setShowEmailModal(false)} className="m-1 btn btn-secondary">Back</button>
+                  <button onClick={() => setShowEmailModal(false)
+                  } className="m-1 btn btn-secondary">Back</button>
                   <button onClick={sendEmailFn} className="m-1 btn btn-success">send Email</button>
                 </div>
               </form>
