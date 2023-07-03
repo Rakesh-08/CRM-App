@@ -29,7 +29,7 @@ export default function Dashboard({ title,engineer }) {
     Total: 0,
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
-  let [customerUserId, setCustomerUserId] = useState("");
+  let [Ids,setIds] = useState({});
 
   useEffect(() => {
     fetchTicketsData();
@@ -92,7 +92,7 @@ export default function Dashboard({ title,engineer }) {
         tooltip: "Send Email",
       onClick: (event, rowData) => {
         setShowEmailModal(true)
-         setCustomerUserId(rowData.reporter)
+          setIds({ticketId:rowData._id,userId:rowData.reporter})
       }
         
       }
@@ -129,7 +129,7 @@ export default function Dashboard({ title,engineer }) {
 
   // send email function
   let sendEmailFn = () => {
-     
+       console.log(Ids)
    }
 
   return (
