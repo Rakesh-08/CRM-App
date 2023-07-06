@@ -90,13 +90,14 @@ export default function Dashboard({ title, userType, bg }) {
       NavigateTo("/");
     }
   };
+  console.log(participants)
 
   // get all users function
 
   let getAllUsers = (status) => {
     
     getUsers(getUsersApi, status).then((response) => {
-      console.log(response.data)
+          setParticipants(response.data.Data)
     }).catch(err=>console.log(err))
 
   }
@@ -228,7 +229,7 @@ export default function Dashboard({ title, userType, bg }) {
               <button
                 onClick={() => {
                   setAdminRoutes("users");
-                  getAllUsers('CUSTOMER')
+                  getAllUsers("CUSTOMER");
                 }}
                 className={` ${
                   adminRoutes == "users" && "text-light border-bottom"
@@ -241,7 +242,7 @@ export default function Dashboard({ title, userType, bg }) {
               <button
                 onClick={() => {
                   setAdminRoutes("engineers");
-                  getAllUsers("ENGINEER")
+                  getAllUsers("ENGINEER");
                 }}
                 className={` ${
                   adminRoutes == "engineers" && "text-light border-bottom"
@@ -370,7 +371,11 @@ export default function Dashboard({ title, userType, bg }) {
         ) : (
           <>
             <div className="d-flex flex-wrap justify-content-around px-4 m-4">
-              <InfoBox info={adminRoutes} count={ticketStatus.OPEN} color="blue" />
+              <InfoBox
+                info={adminRoutes}
+                count={ticketStatus.OPEN}
+                color="blue"
+              />
               <InfoBox
                 info="approved"
                 count={ticketStatus.IN_PROGRESS}
@@ -386,17 +391,15 @@ export default function Dashboard({ title, userType, bg }) {
               title={
                 adminRoutes == "users" ? "Customer details" : "Engineer details"
               }
-                columns={usersColumns}
-                
-                actions={[
-                  {
-                    icon: EditIcon,
-                    tooltip: "edit",
-                    onClick: (e,rowData) => {
-                      
-                    }
-                  }
-                ]}
+              data={participants}
+              columns={usersColumns}
+              actions={[
+                {
+                  icon: EditIcon,
+                  tooltip: "edit",
+                  onClick: (e, rowData) => {},
+                },
+              ]}
             />
           </>
         )}
