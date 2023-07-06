@@ -39,13 +39,27 @@ export default function Dashboard({ title, userType, bg }) {
     CLOSED: 0,
     Total: 0,
   });
+  let [userStatus, setUserStatus] = useState({
+    users: {
+      total: 0,
+      approved: 0,
+      pending: 0,
+    },
+    engineers: {
+      total: 0,
+      approved: 0,
+      pending: 0,
+    },
+  });
   let [showEmailModal, setShowEmailModal] = useState(false);
   let [emailObject, setEmailObject] = useState(initialEmailObject);
   let [adminRoutes, setAdminRoutes] = useState("tickets")
-  let [participants, setParticipants] = useState([])
+  let [customers, setCustomers] = useState([]);
+  let [engineers,setEngineers]=useState([])
 
   useEffect(() => {
     fetchTicketsData();
+    getAllUsers()
   }, []);
 
   let dispatch = useDispatch();
@@ -90,17 +104,46 @@ export default function Dashboard({ title, userType, bg }) {
       NavigateTo("/");
     }
   };
-  console.log(participants)
+  
 
   // get all users function
 
-  let getAllUsers = (status) => {
+  let getAllUsers =  () => {
     
-    getUsers(getUsersApi, status).then((response) => {
-          setParticipants(response.data.Data)
-    }).catch(err=>console.log(err))
+    
+    let dummyFn = (userTypes, users, setter) => {
+    
+      return getUsers(getUsersApi, userTypes)
+        .then((response) => {
+          let d = response.data.Data;
 
+          let approvedCount = d.filter(
+            (obj) => obj.userType == userTypes
+          ).length;
+
+          setter(d);
+     
+
+          console.log("log "+ userTypes)
+
+          setUserStatus((prevState)=> ({
+            ...prevState,
+            [users]: {
+              total: d.length,
+              approved: approvedCount,
+              pending: d.length - approvedCount,
+            },
+          }))
+        })
+        .catch((err) => console.log(err));
+  
+    }
+  
+     dummyFn("CUSTOMER", 'users', setCustomers) 
+     dummyFn("ENGINEER", 'engineers', setEngineers) 
+    
   }
+
 
   // columns of ticket table with its label
   let columns = [
@@ -114,7 +157,19 @@ export default function Dashboard({ title, userType, bg }) {
 
   //columns of users table
   
-  let toggle = adminRoutes == 'users' ? { title: "Tickets Created", field: "ticketsCreated" }:{title:"Tickets Assigned",field:"ticketsAssigned"}
+  let toggle =
+    adminRoutes == "users"
+      ? {
+          title: "Tickets Created",
+          field: "ticketsCreated",
+          render: (rowData) => rowData.ticketsCreated.length,
+        }
+      : {
+          title: "Tickets Assigned",
+          field: "ticketsAssigned",
+          render: (rowData) => rowData.ticketsAssigned.length,
+        };
+  
   let usersColumns = [
     { title: "ID", field: "_id" },
     { title: "Name", field: "name" },
@@ -125,12 +180,16 @@ export default function Dashboard({ title, userType, bg }) {
   ];
 
   // toggle between reporter or assignee on same table
-  
+  let ticketTableTitle;
   if (userType == "CUSTOMER") {
-    columns =[...columns,{ title: "ASSIGNEE", field: "assigneeName" }] ;
+    ticketTableTitle="Tickets raised by you"
+    columns = [...columns, { title: "ASSIGNEE", field: "assigneeName" }];
+    
   } else if (userType == "ENGINEER") {
+    ticketTableTitle="Tickets assigned to you"
     columns = [...columns, { title: "REPORTER", field: "reporterName" }];
   } else {
+    ticketTableTitle="tickets created by all customers"
      columns = [
        ...columns,
        { title: "REPORTER", field: "reporterName" },
@@ -207,7 +266,7 @@ export default function Dashboard({ title, userType, bg }) {
       </div>
       <div className="mx-4 p-3  text-center">
         <h2 className=" fs-4">{title}</h2>
-        <p> Take a look at all your tickets below !</p>
+        <p> Take a look at all tickets below !</p>
       </div>
 
       {userType !== "ADMIN" && (
@@ -221,42 +280,47 @@ export default function Dashboard({ title, userType, bg }) {
 
       {userType == "ADMIN" ? (
         <div>
-          <div
-            style={{ height: "2.2em" }}
-            className="mb-4 mx-2  d-flex border-bottom"
-          >
-            <div>
+          <div style={{ height: "2.2em" }} className="mb-4 mx-2  d-flex ">
+            <div
+              className={` ${
+                adminRoutes == "users" &&
+                " border-bottom border-primary border-2 "
+              } bg-transparent  mx-2`}
+            >
               <button
                 onClick={() => {
                   setAdminRoutes("users");
-                  getAllUsers("CUSTOMER");
                 }}
-                className={` ${
-                  adminRoutes == "users" && "text-light border-bottom"
-                } bg-transparent  border-0 mx-2`}
+                className=" bg-transparent  border-0 mx-2"
               >
                 users
               </button>
             </div>
-            <div>
+            <div
+              className={` ${
+                adminRoutes == "engineers" &&
+                " border-bottom border-primary border-2  "
+                } bg-transparent  mx-2`}
+              
+            >
               <button
                 onClick={() => {
                   setAdminRoutes("engineers");
-                  getAllUsers("ENGINEER");
                 }}
-                className={` ${
-                  adminRoutes == "engineers" && "text-light border-bottom"
-                } bg-transparent  border-0 mx-2`}
+                className=" bg-transparent  border-0 mx-2"
               >
                 engineers
               </button>
             </div>
-            <div>
+            <div
+              className={` ${
+                adminRoutes == "tickets" &&
+                " border-bottom border-primary border-2 "
+              } bg-transparent  mx-2`}
+            >
               <button
                 onClick={() => setAdminRoutes("tickets")}
-                className={` ${
-                  adminRoutes == "tickets" && "text-light border-bottom"
-                } bg-transparent  border-0 mx-2`}
+                className=" bg-transparent  border-0 mx-2"
               >
                 tickets
               </button>
@@ -334,7 +398,7 @@ export default function Dashboard({ title, userType, bg }) {
         {adminRoutes == "tickets" ? (
           <>
             <MaterialTable
-              title="Tickets raised by you "
+              title={ticketTableTitle}
               columns={columns}
               data={ticketDetails}
               actions={[
@@ -373,17 +437,17 @@ export default function Dashboard({ title, userType, bg }) {
             <div className="d-flex flex-wrap justify-content-around px-4 m-4">
               <InfoBox
                 info={adminRoutes}
-                count={ticketStatus.OPEN}
+                count={userStatus[adminRoutes].total}
                 color="blue"
               />
               <InfoBox
                 info="approved"
-                count={ticketStatus.IN_PROGRESS}
+                count={userStatus[adminRoutes].approved}
                 color="green"
               />
               <InfoBox
-                info="pending"
-                count={ticketStatus.BLOCKED}
+                info="pending / blocked"
+                count={userStatus[adminRoutes].pending}
                 color="grey"
               />
             </div>
@@ -391,9 +455,10 @@ export default function Dashboard({ title, userType, bg }) {
               title={
                 adminRoutes == "users" ? "Customer details" : "Engineer details"
               }
-              data={participants}
+              data={adminRoutes == "users" ? customers : engineers}
               columns={usersColumns}
-              actions={[
+                actions={[
+              sendEmailAction,
                 {
                   icon: EditIcon,
                   tooltip: "edit",

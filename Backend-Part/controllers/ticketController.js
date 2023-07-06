@@ -257,6 +257,30 @@ const deleteTicket = async (req, res) => {
                 _id:req.params._id 
             });
 
+            if (deleteResponse.deletedCount > 0) {
+
+                // updating the reporter docs for deletion
+                
+                let reportingCustomer = await User.findOne({
+                    userId:ticket.reporter
+                }).select({ ticketsCreated: 1, _id: 0 })
+
+                reportingCustomer.ticketsCreated= reportingCustomer.ticketsCreated.filter(id=> id!==ticket._id)
+
+                await reportingCustomer.save();
+
+                // updating the engineer assigned docs 
+
+                let assignedEngineer = await User.findOne({
+                    userId: ticket.reporter
+                }).select({ ticketsAssigned: 1, _id: 0 })
+
+             assignedEngineer.ticketsAssigned = assignedEngineer.ticketsAssigned.filter(id => id !== ticket._id)
+
+                await assignedEngineer.save();
+
+            }
+
             res.status(200).send({...deleteResponse,_id:ticket._id});
 
         } else {
