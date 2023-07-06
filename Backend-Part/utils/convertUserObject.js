@@ -4,6 +4,7 @@ module.exports = (users) => {
 
     users.forEach(user => {
         let resObj = {
+            _id:user._id
             name: user.name,
             email: user.email,
             userId: user.userId,

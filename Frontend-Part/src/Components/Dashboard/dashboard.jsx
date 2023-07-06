@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import CreateUpdateTicket from "./createOrUpdateTicket";
 import { getTickets, deleteApiCall, sendEmail } from "../../apiCalls/ticket";
+import { getUsers } from "../../apiCalls/users";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
+import EditIcon from '@mui/icons-material/Edit';
 import { Modal } from "react-bootstrap";
 
 
@@ -14,6 +16,7 @@ import { Modal } from "react-bootstrap";
 let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
 let sendEmailApi = "/crm/api/v1/sendEmail";
+let getUsersApi="/crm/api/v1/users"
 
 let initialEmailObject = {
   userId: "",
@@ -23,8 +26,7 @@ let initialEmailObject = {
 }
 
 
-export default function Dashboard({ title,engineer }) {
-    
+export default function Dashboard({ title, userType, bg }) {
   let NavigateTo = useNavigate();
   let [ticketDetails, setTicketDetails] = useState([]);
   let [message, setMessage] = useState("");
@@ -38,29 +40,28 @@ export default function Dashboard({ title,engineer }) {
     Total: 0,
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
-  let [emailObject,setEmailObject] = useState(initialEmailObject);
+  let [emailObject, setEmailObject] = useState(initialEmailObject);
+  let [adminRoutes, setAdminRoutes] = useState("tickets")
+  let [participants, setParticipants] = useState([])
 
   useEffect(() => {
     fetchTicketsData();
   }, []);
 
   let dispatch = useDispatch();
- 
-    
 
-     // set different status of tickets
-    let ticketDistribution = (data) => {
-        
+  // set different status of tickets
+  let ticketDistribution = (data) => {
     let temp = {
-  OPEN: 0,
-  IN_PROGRESS: 0,
-  BLOCKED: 0,
-  CLOSED: 0,
-  Total: 0,
-};
-      
+      OPEN: 0,
+      IN_PROGRESS: 0,
+      BLOCKED: 0,
+      CLOSED: 0,
+      Total: 0,
+    };
+
     for (let i = 0; i < data.length; i++) {
-         temp[data[i].status]+= 1
+      temp[data[i].status] += 1;
     }
     temp.Total = data.length;
     setTicketStatus(temp);
@@ -69,7 +70,7 @@ export default function Dashboard({ title,engineer }) {
   // wrapping an asynchronous funtion with async/await for inside useEffect
   let fetchTicketsData = async () => {
     await getTickets(getAllTickets)
-        .then((response) => {
+      .then((response) => {
         setTicketDetails(response.data);
         ticketDistribution(response.data);
         setMessage("");
@@ -78,10 +79,9 @@ export default function Dashboard({ title,engineer }) {
         console.log(err);
         setMessage(err.response.data.message);
       });
-    };
-    
+  };
 
- // logout function
+  // logout function
   let logoutFn = () => {
     let ans = window.confirm("Are you sure ?");
 
@@ -89,50 +89,79 @@ export default function Dashboard({ title,engineer }) {
       localStorage.clear();
       NavigateTo("/");
     }
-    };
+  };
 
-    // toggle between reporter or assignee on same table
+  // get all users function
+
+  let getAllUsers = (status) => {
     
-  let user = !engineer ? { title: "ASSIGNEE", field: "assigneeName" } : { title: "REPORTER", field: "reporterName" };
-  
-  let sendEmailAction = engineer
-    ? {
-        icon: EmailIcon,
-        tooltip: "Send Email",
-      onClick: (event, rowData) => {
-        setShowEmailModal(true)
-          setEmailObject({ticketId:rowData._id,userId:rowData.reporter})
-      }
-        
-      }
-    : null;
+    getUsers(getUsersApi, status).then((response) => {
+      console.log(response.data)
+    }).catch(err=>console.log(err))
 
-    // columns of table with its label
+  }
+
+  // columns of ticket table with its label
   let columns = [
     { title: "ID", field: "_id" },
     { title: "TITLE", field: "title" },
-      { title: "DESCRIPTION", field: "description" },
-    user,
+    { title: "DESCRIPTION", field: "description" },
     { title: "PRIORITY", field: "ticketPriority" },
-     { title: "STATUS", field: "status" },
-      { title: "COMMENTS", field: "comments" },
-    
+    { title: "STATUS", field: "status" },
+    { title: "COMMENTS", field: "comments" },
   ];
 
-    
-    // deletet ticket function
+  //columns of users table
+  
+  let toggle = adminRoutes == 'users' ? { title: "Tickets Created", field: "ticketsCreated" }:{title:"Tickets Assigned",field:"ticketsAssigned"}
+  let usersColumns = [
+    { title: "ID", field: "_id" },
+    { title: "Name", field: "name" },
+    { title: "User Id", field: "userId" },
+    { title: "Email", field: "email" },
+    { title: "User Status", field: "userStatus" },
+     toggle
+  ];
+
+  // toggle between reporter or assignee on same table
+  
+  if (userType == "CUSTOMER") {
+    columns =[...columns,{ title: "ASSIGNEE", field: "assigneeName" }] ;
+  } else if (userType == "ENGINEER") {
+    columns = [...columns, { title: "REPORTER", field: "reporterName" }];
+  } else {
+     columns = [
+       ...columns,
+       { title: "REPORTER", field: "reporterName" },
+       { title: "ASSIGNEE", field: "assigneeName" },
+     ];
+  }
+
+  let sendEmailAction =
+    userType !== "CUSTOMER"
+      ? {
+          icon: EmailIcon,
+          tooltip: "Send Email",
+          onClick: (event, rowData) => {
+            setShowEmailModal(true);
+            setEmailObject({ ticketId: rowData._id, userId: rowData.reporter });
+          },
+        }
+      : null;
+
+  // deletet ticket function
   let deleteTicket = (id) => {
     let confirmation = window.confirm("Are you sure");
 
     if (confirmation) {
-     deleteApiCall(deleteTicketApi + id)
-       .then((response) => {
-         fetchTicketsData();
-         alert(
-           `the ticket generated with id ${response.data._id} has been removed`
-         );
-       })
-       .catch((err) => console.log(err));
+      deleteApiCall(deleteTicketApi + id)
+        .then((response) => {
+          fetchTicketsData();
+          alert(
+            `the ticket generated with id ${response.data._id} has been removed`
+          );
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -144,90 +173,238 @@ export default function Dashboard({ title,engineer }) {
       userId: emailObject.userId,
       ticketId: emailObject.ticketId,
       subject: emailObject.subject,
-      content:emailObject.content
-    }
-   
-   
-    sendEmail(sendEmailApi, obj).then((response) => {
-      setMessage(response.data.message)
-      setTimeout(() => {
-          setMessage("")
-      },5000)
-    }).catch(err=>console.log(err.response.data))
+      content: emailObject.content,
+    };
 
-    setShowEmailModal(false)
+    sendEmail(sendEmailApi, obj)
+      .then((response) => {
+        setMessage(response.data.message);
+        setTimeout(() => {
+          setMessage("");
+        }, 5000);
+      })
+      .catch((err) => console.log(err.response.data));
 
-   }
+    setShowEmailModal(false);
+  };
 
   return (
-    <div className=" bg-dark text-white pb-5 ">
-      <div className="d-flex justify-content-end">
-        <button onClick={logoutFn} className="btn btn-primary mx-3 mt-2">
+    <div className={` ${bg} text-white pb-5 `}>
+      <div className="d-flex justify-content-between  bg-dark sticky-top p-2 mb-3">
+        <div className="my-1">
+          <p>
+            CUSTOMER
+            <span className="mx-1 text-success fst-italic fw-bold">
+              {" "}
+              SUPPORT SERVICE
+            </span>
+          </p>
+        </div>
+        <button onClick={logoutFn} className="btn btn-warning mx-3 mt-2">
           Logout
         </button>
       </div>
-      <div className="mx-4  text-center">
-        <h2 className="text-info lead fs-4">{title}</h2>
+      <div className="mx-4 p-3  text-center">
+        <h2 className=" fs-4">{title}</h2>
         <p> Take a look at all your tickets below !</p>
       </div>
-      <h4 className="m-4 lead fs-4">
-        Total Tickets:
-        <span className="text-danger fs-3 fw-bold mx-2">
-          {ticketStatus.Total}
-        </span>
-      </h4>
 
-      <div className="d-flex flex-wrap justify-content-around px-4 m-4">
-        <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
-        <InfoBox
-          info="IN PROGRESS"
-          count={ticketStatus.IN_PROGRESS}
-          color="green"
-        />
-        <InfoBox info="BLOCKED" count={ticketStatus.BLOCKED} color="grey" />
-        <InfoBox info="CLOSED" count={ticketStatus.CLOSED} color="purple" />
-      </div>
+      {userType !== "ADMIN" && (
+        <h4 className="m-4 lead fs-4">
+          Total Tickets:
+          <span className="text-danger fs-3 fw-bold mx-2">
+            {ticketStatus.Total}
+          </span>
+        </h4>
+      )}
 
-      <div className=" mx-4 p-2 h-100">
-        <MaterialTable
-          title="Tickets raised by you "
-          columns={columns}
-          data={ticketDetails}
-          actions={[
-            sendEmailAction,
-            {
-              icon: DeleteIcon,
-              tooltip: "Delete Ticket",
-              onClick: (event, rowData) => {
-                deleteTicket(rowData._id);
-              },
-            },
-          ]}
-          options={{
-            actionsColumnIndex: -1,
-          }}
-          onRowClick={(e, rowData) => {
-            dispatch({
-              type: "currentRow",
-              payload: {
-                title: rowData.title,
-                description: rowData.description,
-                priority: rowData.ticketPriority,
-                status: rowData.status,
-                _id: rowData._id,
-                comments: rowData.comments,
-              },
-            });
+      {userType == "ADMIN" ? (
+        <div>
+          <div
+            style={{ height: "2.2em" }}
+            className="mb-4 mx-2  d-flex border-bottom"
+          >
+            <div>
+              <button
+                onClick={() => {
+                  setAdminRoutes("users");
+                  getAllUsers('CUSTOMER')
+                }}
+                className={` ${
+                  adminRoutes == "users" && "text-light border-bottom"
+                } bg-transparent  border-0 mx-2`}
+              >
+                users
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  setAdminRoutes("engineers");
+                  getAllUsers("ENGINEER")
+                }}
+                className={` ${
+                  adminRoutes == "engineers" && "text-light border-bottom"
+                } bg-transparent  border-0 mx-2`}
+              >
+                engineers
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={() => setAdminRoutes("tickets")}
+                className={` ${
+                  adminRoutes == "tickets" && "text-light border-bottom"
+                } bg-transparent  border-0 mx-2`}
+              >
+                tickets
+              </button>
+            </div>
+          </div>
+          {adminRoutes == "tickets" && (
+            <>
+              {" "}
+              <div className="d-flex justify-content-around mt-3">
+                <div className="bg-success rounded-3 w-25 text-center">
+                  <h4 className="my-5 lead">
+                    user Id:{" "}
+                    <span className="text-warning">
+                      {localStorage.getItem("userId")}
+                    </span>
+                  </h4>
+                  <p className="fs-5">
+                    Total Tickets:
+                    <span className="m-1 ">{ticketStatus.Total}</span>
+                  </p>
+                </div>
 
-            setShowModal(true);
-            setUpdateModal(true);
-          }}
-        />
+                <div className="bg-danger d-flex flex-column align-items-center rounded-3 w-25 p-1">
+                  <div>
+                    <p className="fs-5 text-info">
+                      OPEN :
+                      <span className="mx-2 text-light">
+                        {ticketStatus.OPEN}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="fs-5">
+                      IN PROGRESS :
+                      <span className="mx-2 text-light">
+                        {ticketStatus.IN_PROGRESS}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="fs-5 text-warning">
+                      BLOCKED:
+                      <span className="mx-2 text-light">
+                        {ticketStatus.BLOCKED}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="fs-5 text-dark">
+                      CLOSED :
+                      <span className="mx-2 text-light">
+                        {ticketStatus.CLOSED}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="d-flex flex-wrap justify-content-around px-4 m-4">
+          <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
+          <InfoBox
+            info="IN PROGRESS"
+            count={ticketStatus.IN_PROGRESS}
+            color="green"
+          />
+          <InfoBox info="BLOCKED" count={ticketStatus.BLOCKED} color="grey" />
+          <InfoBox info="CLOSED" count={ticketStatus.CLOSED} color="purple" />
+        </div>
+      )}
+
+      <div className=" mx-4 px-5 mt-3 h-100">
+        {adminRoutes == "tickets" ? (
+          <>
+            <MaterialTable
+              title="Tickets raised by you "
+              columns={columns}
+              data={ticketDetails}
+              actions={[
+                sendEmailAction,
+                {
+                  icon: DeleteIcon,
+                  tooltip: "Delete Ticket",
+                  onClick: (event, rowData) => {
+                    deleteTicket(rowData._id);
+                  },
+                },
+              ]}
+              options={{
+                actionsColumnIndex: -1,
+              }}
+              onRowClick={(e, rowData) => {
+                dispatch({
+                  type: "currentRow",
+                  payload: {
+                    title: rowData.title,
+                    description: rowData.description,
+                    priority: rowData.ticketPriority,
+                    status: rowData.status,
+                    _id: rowData._id,
+                    comments: rowData.comments,
+                  },
+                });
+
+                setShowModal(true);
+                setUpdateModal(true);
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <div className="d-flex flex-wrap justify-content-around px-4 m-4">
+              <InfoBox info={adminRoutes} count={ticketStatus.OPEN} color="blue" />
+              <InfoBox
+                info="approved"
+                count={ticketStatus.IN_PROGRESS}
+                color="green"
+              />
+              <InfoBox
+                info="pending"
+                count={ticketStatus.BLOCKED}
+                color="grey"
+              />
+            </div>
+            <MaterialTable
+              title={
+                adminRoutes == "users" ? "Customer details" : "Engineer details"
+              }
+                columns={usersColumns}
+                
+                actions={[
+                  {
+                    icon: EditIcon,
+                    tooltip: "edit",
+                    onClick: (e,rowData) => {
+                      
+                    }
+                  }
+                ]}
+            />
+          </>
+        )}
       </div>
       <div className="text-center">
         <hr className=" bg-light" />
         <p className=" text-warning">{message}</p>
-        {!engineer && (
+        {userType == "CUSTOMER" && (
           <>
             <p>Facing any issue ? Raise a ticket</p>
             <button
@@ -312,7 +489,7 @@ export default function Dashboard({ title,engineer }) {
             title="Update ticket"
             btnAction="update"
             fetchTicketsData={fetchTicketsData}
-            engineer={engineer}
+            userType={userType}
           />
         ) : (
           <CreateUpdateTicket

@@ -1,5 +1,6 @@
 import { useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom"
+import Dashboard from "../Dashboard/dashboard";
 
 export default function AdminPage() {
     let NavigateTo = useNavigate();
@@ -14,15 +15,21 @@ export default function AdminPage() {
 
   
 
-    let user= localStorage.getItem("userType")
    
-        
+    let user= localStorage.getItem("username")
+   
+    let title = `Welcome ${user},
+        you are currently seeing the admin page ` 
         
        
  
     return (
-        <div className="p-5 ">
-            <h2>{user && `welcome ${ user}, how can we help you`} </h2>
+        <div >
+            <Dashboard
+                title={title}
+                userType={localStorage.getItem("userType")}
+                bg={"bg-info" } />
+            
 
         </div>
     )

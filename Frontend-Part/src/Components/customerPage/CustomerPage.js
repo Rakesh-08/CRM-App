@@ -29,6 +29,8 @@ export default function CustomerPage() {
         <div>
             <Dashboard
                 title={title}
+                userType={localStorage.getItem("userType")}
+                bg={"bg-dark"} 
                 />
         </div>
        

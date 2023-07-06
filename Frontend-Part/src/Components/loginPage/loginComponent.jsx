@@ -73,7 +73,7 @@ export default function LoginComponent() {
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("username", data.name);
           localStorage.setItem("userType", data.userType);
-
+          localStorage.setItem('userId',data.userId)
           NavigateTo(`/${data.userType}`)
             }
         

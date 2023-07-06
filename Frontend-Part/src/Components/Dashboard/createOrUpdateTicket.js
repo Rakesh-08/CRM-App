@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 let postTicketApi = "/crm/api/v1/tickets"
 let putTicketCall = "/crm/api/v1/tickets/";
 
-export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,engineer }) {
+export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,userType }) {
    
 
   let ModalInfo = useSelector((state) => state.ModalInfo);
@@ -132,16 +132,15 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                                 })
                             }}>
                                 <option value="OPEN">OPEN</option>
-                                    <option disabled={!engineer} value="IN_PROGRESS"> IN PROGRESS</option>
-                                    <option disabled={!engineer} value= "BLOCKED">BLOCKED</option>
+                                    <option disabled={userType=="CUSTOMER"} value="IN_PROGRESS"> IN PROGRESS</option>
+                                <option disabled={userType == "CUSTOMER"} value= "BLOCKED">BLOCKED</option>
                                 <option value="CLOSED">CLOSED</option>
                             </select>
                         </div>}
-                        {engineer &&<div className="input-group m-2 row">
+                        {updateModal &&
+                            <div className="input-group m-2 row">
                             <label className="col-3" htmlFor="comments"> Comments </label>
-
-
-                            <input  className={`form-control mx-2 $`} type="text" name="comments" value={ModalInfo.comments} onChange={(e) => {
+                                <input disabled={userType == "CUSTOMER"}  className={`form-control mx-2 $`} type="text" name="comments" value={ModalInfo.comments} onChange={(e) => {
                                 dispatch({
                                     type: "onChange",
                                     payload: {
