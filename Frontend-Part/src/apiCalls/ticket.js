@@ -32,7 +32,7 @@ let deleteApiCall = async (url) => {
 
 let getEmail = async (url,userId) => {
 
-    return await axios.get(base_url + url, userId, token)
+    return await axios.get(base_url + url+ userId, token)
 }
 
 export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall,getEmail }

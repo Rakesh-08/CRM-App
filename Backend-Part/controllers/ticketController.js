@@ -339,7 +339,7 @@ let getEmail = async (req, res) => {
 
 
     try {
-        let userId = req.body.userId;
+        let userId = req.params.userId
 
         if (!userId) {
             return res.status(400).send({

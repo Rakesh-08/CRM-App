@@ -15,7 +15,7 @@ import { Modal } from "react-bootstrap";
 
 let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
-let getEmailApi = "/crm/api/v1/getEmail";
+let getEmailApi = "/crm/api/v1/getEmail/";
 let getUsersApi = "/crm/api/v1/users";
 let updateUserStatusApi="/crm/api/v1/users/"
 
