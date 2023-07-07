@@ -45,11 +45,13 @@ export default function Dashboard({ title, userType, bg }) {
       total: 0,
       approved: 0,
       pending: 0,
+      blocked:0
     },
     engineers: {
       total: 0,
       approved: 0,
       pending: 0,
+      blocked: 0
     },
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
@@ -118,9 +120,9 @@ export default function Dashboard({ title, userType, bg }) {
           let approvedCount = d.filter(
             (obj) => obj.userStatus == "APPROVED"
           ).length;
-          console.log(d)
  
           setter(d);
+          console.log(d)
 
           setUserStatus((prevState) => ({
             ...prevState,
@@ -471,10 +473,14 @@ export default function Dashboard({ title, userType, bg }) {
                 color="green"
               />
               <InfoBox
-                info="pending / blocked"
+                info="pending"
                 count={userStatus[adminRoutes].pending}
                 color="grey"
-              />
+                />
+                <InfoBox 
+                  info="blocked"
+                  count={userStatus[adminRoutes].blocked}
+                  color="purple"/>
             </div>
             <MaterialTable
               title={

@@ -65,12 +65,15 @@ const updateUserById = async (req, res) => {
         }
 
 
+        console.log(objectPassed)
+
         let userToBeUpdated = await User.findOneAndUpdate({
             userId: req.params.userId
         }, { ...objectPassed }, {
             new: true
         })
         if (userToBeUpdated) {
+            console.log(userToBeUpdated)
 
             res.status(200).send(secureObjectResponse([userToBeUpdated]))
         } else {
