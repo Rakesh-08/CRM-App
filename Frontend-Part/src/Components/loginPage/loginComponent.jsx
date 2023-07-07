@@ -105,7 +105,10 @@ export default function LoginComponent() {
   }
 
   return (
-    <div className="bg-info vh-100 d-flex justify-content-center align-items-center">
+    <div className="bg-info vh-100 d-flex flex-column justify-content-center align-items-center">
+      <div className="mb-2">
+        <h1 className="py-2 mb-3 lead fs-1 text-light text-uppercase ">welcome to  <span className="text-secondary">customer support service</span></h1>
+      </div>
       <div className="card  p-5  form-box rounded-4">
         <h3 className="my-4 text-center">{showSignup ? "Sign Up" : "Login"}</h3>
 

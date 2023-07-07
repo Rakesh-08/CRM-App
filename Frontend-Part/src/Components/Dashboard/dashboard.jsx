@@ -61,7 +61,7 @@ export default function Dashboard({ title, userType, bg }) {
   let [customers, setCustomers] = useState([]);
   let [engineers, setEngineers] = useState([])
   
-  console.log(editUserStatus.userId)
+
 
   useEffect(() => {
     fetchTicketsData();
@@ -232,7 +232,6 @@ export default function Dashboard({ title, userType, bg }) {
   let updateUserStatus = () => {
     let { userId, status } = editUserStatus;
   
-   console.log(userId)
     updateUser(updateUserStatusApi + userId, { userStatus: status }).then((res) => {
      
       let sts = res.data[0].userType;
@@ -258,6 +257,8 @@ export default function Dashboard({ title, userType, bg }) {
       subject: emailObject.subject,
       content: emailObject.content,
     };
+
+    console.log(obj)
 
     sendEmail(sendEmailApi, obj)
       .then((response) => {
