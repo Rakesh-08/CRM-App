@@ -10,7 +10,7 @@ module.exports = function (app) {
     app.get("/crm/api/v1/tickets/:_id", [authJwtValidators.verifyToken], ticketController.getTicketById);
     app.delete("/crm/api/v1/tickets/:_id",[authJwtValidators.verifyToken],ticketController.deleteTicket);
     app.put("/crm/api/v1/assignTickets", [authJwtValidators.verifyToken,ticketValidators.validateTicketAssignment], ticketController.assignTicketToEngineer);
-    app.post("/crm/api/v1/sendEmail",[authJwtValidators.verifyToken],ticketController.sendEmailToCustomer)
+    app.get("/crm/api/v1/getEmail",[authJwtValidators.verifyToken],ticketController.getEmail)
 
 
 }

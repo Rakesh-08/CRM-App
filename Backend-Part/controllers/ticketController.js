@@ -15,31 +15,31 @@ const createTicket = async (req, res) => {
         reporter: req.userId, // this is coming from authjwt middleware
 
     }
- try {
-    const engineer = await User.findOne({
-        userType: constants.userTypes.engineer,
-        userStatus: constants.userStatus.approved
-    })
-     
-     // update the customer 
-     const user = await User.findOne({
-         userId: req.userId
-     })
+    try {
+        const engineer = await User.findOne({
+            userType: constants.userTypes.engineer,
+            userStatus: constants.userStatus.approved
+        })
 
-     if (engineer) {
-         ticketObject.assignee = engineer.userId;
-         ticketObject.assigneeName = engineer.name;
-     }
+        // update the customer 
+        const user = await User.findOne({
+            userId: req.userId
+        })
 
-     
-     ticketObject.reporterName = user.name;
+        if (engineer) {
+            ticketObject.assignee = engineer.userId;
+            ticketObject.assigneeName = engineer.name;
+        }
 
-   
+
+        ticketObject.reporterName = user.name;
+
+
         const ticket = await Ticket.create(ticketObject);
 
         if (ticket) {
 
-           
+
             user.ticketsCreated.push(ticket._id);
             await user.save();
 
@@ -88,7 +88,7 @@ const updateTicket = async (req, res) => {
         }
         let isAdmin = null;
 
-        if (caller.userStatus == "APPROVED" && caller.userType== "ADMIN") {
+        if (caller.userStatus == "APPROVED" && caller.userType == "ADMIN") {
             isAdmin = caller;
         }
 
@@ -108,18 +108,18 @@ const updateTicket = async (req, res) => {
 
 
             if (ticket.reporter !== req.userId) {
-                
+
                 let content = `Hello sir,/n there was an update in your ticket ,to look into update visit the support page. /n regards
            CRM support service`
-               
-               
+
+
 
                 sendEmail(updatedTicket._id, `Update in ticket id : ${updatedTicket._id} `, content, [customerEmail], updatedTicket.reporter)
 
 
             }
-  
-           
+
+
 
             res.status(200).send(updatedTicket);
 
@@ -253,19 +253,19 @@ const deleteTicket = async (req, res) => {
                 message: "ticket does not exist"
             })
         } else if (ticket && (ticket.reporter === req.userId || ticket.assignee == req.userId || isAdmin)) {
-            let deleteResponse= await  Ticket.deleteOne({
-                _id:req.params._id 
+            let deleteResponse = await Ticket.deleteOne({
+                _id: req.params._id
             });
 
             if (deleteResponse.deletedCount > 0) {
 
                 // updating the reporter docs for deletion
-                
+
                 let reportingCustomer = await User.findOne({
-                    userId:ticket.reporter
+                    userId: ticket.reporter
                 }).select({ ticketsCreated: 1, _id: 0 })
 
-                reportingCustomer.ticketsCreated= reportingCustomer.ticketsCreated.filter(id=> id!==ticket._id)
+                reportingCustomer.ticketsCreated = reportingCustomer.ticketsCreated.filter(id => id !== ticket._id)
 
                 await reportingCustomer.save();
 
@@ -275,13 +275,13 @@ const deleteTicket = async (req, res) => {
                     userId: ticket.reporter
                 }).select({ ticketsAssigned: 1, _id: 0 })
 
-             assignedEngineer.ticketsAssigned = assignedEngineer.ticketsAssigned.filter(id => id !== ticket._id)
+                assignedEngineer.ticketsAssigned = assignedEngineer.ticketsAssigned.filter(id => id !== ticket._id)
 
                 await assignedEngineer.save();
 
             }
 
-            res.status(200).send({...deleteResponse,_id:ticket._id});
+            res.status(200).send({ ...deleteResponse, _id: ticket._id });
 
         } else {
             res.status(401).send({
@@ -335,31 +335,33 @@ const assignTicketToEngineer = async (req, res) => {
 }
 
 
-let sendEmailToCustomer = async (req, res) => {
-    
+let getEmail = async (req, res) => {
+
 
     try {
-  let  {ticketId, userId, subject, content }= req.body;
+        let userId = req.body.userId;
 
-    let requester = await User.findOne({
-        userId:req.userId
-    })
+        if (!userId) {
+            return res.status(400).send({
+                message: "please pass the userId of the user"
+            })
+        }
 
-    if (requester.userType === constants.userTypes.customer) {
-        return res.status(401).send({
-            message:"unauthorised request ! you are not allowed to send email"
+        let requester = await User.findOne({
+            userId: req.userId
         })
-    }
-    let customer = await User.findOne({
-        userId:userId
-    })
 
-    sendEmail(ticketId, subject, content, [customer.email], userId)
-    
-    res.status(200).send({
-        message:"email send successfully"
-    })
-        
+        if (requester.userType === constants.userTypes.customer) {
+            return res.status(401).send({
+                message: "unauthorised request ! you are not allowed to send email"
+            })
+        }
+        let client = await User.findOne({
+            userId: userId
+        })
+
+        res.status(200).send(client.email)
+
     } catch (err) {
         console.log(err)
         res.status(500).send({
@@ -376,7 +378,7 @@ module.exports = {
     getTicketById,
     deleteTicket,
     assignTicketToEngineer,
-    sendEmailToCustomer
+    getEmail
 }
 
 

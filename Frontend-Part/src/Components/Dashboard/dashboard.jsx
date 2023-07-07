@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import CreateUpdateTicket from "./createOrUpdateTicket";
-import { getTickets, deleteApiCall, sendEmail } from "../../apiCalls/ticket";
+import { getTickets, deleteApiCall, getEmail } from "../../apiCalls/ticket";
 import { getUsers,updateUser } from "../../apiCalls/users";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
@@ -15,13 +15,13 @@ import { Modal } from "react-bootstrap";
 
 let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
-let sendEmailApi = "/crm/api/v1/sendEmail";
+let getEmailApi = "/crm/api/v1/getEmail";
 let getUsersApi = "/crm/api/v1/users";
 let updateUserStatusApi="/crm/api/v1/users/"
 
 let initialEmailObject = {
   userId: "",
-  ticketId: "",
+  email:"",
   subject: "",
   content:""
 }
@@ -207,7 +207,7 @@ export default function Dashboard({ title, userType, bg }) {
           tooltip: "Send Email",
           onClick: (event, rowData) => {
             setShowEmailModal(true);
-            setEmailObject({ ticketId: rowData._id, userId: rowData.reporter });
+            setEmailObject({  userId: rowData.reporter ,email:rowData.email });
           },
         }
       : null;
@@ -248,33 +248,18 @@ export default function Dashboard({ title, userType, bg }) {
   }
 
   // send email function
-  let sendEmailFn = (e) => {
+  let sendEmailFn = async(e) => {
     e.preventDefault();
 
-    let obj = {
-      userId: emailObject.userId,
-      ticketId: emailObject.ticketId,
-      subject: emailObject.subject,
-      content: emailObject.content,
-    };
+    if (emailObject.email) {
+      
+    } else {
+        
+      let email = await getEmail(getEmailApi, emailObject.userId)
+      console.log(email)
+    }
 
-    console.log(obj)
-
-    sendEmail(sendEmailApi, obj)
-      .then((response) => {
-        setMessage(response.data.message);
-        setTimeout(() => {
-          setMessage("");
-        }, 10000);
-      })
-      .catch((err) => {
-        console.log(err.response.data)
-        setMessage(err.response.data.message);
-        setTimeout(() => {
-          setMessage("");
-        }, 10000);
-      });
-
+    
     setShowEmailModal(false);
   };
 
