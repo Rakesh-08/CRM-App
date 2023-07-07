@@ -64,8 +64,7 @@ const updateUserById = async (req, res) => {
             })
         }
 
-
-        console.log(objectPassed)
+      console.log(objectPassed.userId)
 
         let userToBeUpdated = await User.findOneAndUpdate({
             userId: req.params.userId
@@ -73,11 +72,11 @@ const updateUserById = async (req, res) => {
             new: true
         })
         if (userToBeUpdated) {
-            console.log(userToBeUpdated)
+           
 
             res.status(200).send(secureObjectResponse([userToBeUpdated]))
         } else {
-            res.status(200).send({
+            res.status(400).send({
                 message: `user with ${req.params.userId} doesn't exist`
             })
         }

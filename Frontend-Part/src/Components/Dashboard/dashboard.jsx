@@ -59,7 +59,9 @@ export default function Dashboard({ title, userType, bg }) {
   let [emailObject, setEmailObject] = useState(initialEmailObject);
   let [adminRoutes, setAdminRoutes] = useState("tickets")
   let [customers, setCustomers] = useState([]);
-  let [engineers,setEngineers]=useState([])
+  let [engineers, setEngineers] = useState([])
+  
+  
 
   useEffect(() => {
     fetchTicketsData();
@@ -122,7 +124,7 @@ export default function Dashboard({ title, userType, bg }) {
           ).length;
  
           setter(d);
-          console.log(d)
+         
 
           setUserStatus((prevState) => ({
             ...prevState,
@@ -177,6 +179,8 @@ export default function Dashboard({ title, userType, bg }) {
      toggle
   ];
 
+  
+
   // toggle between reporter or assignee on same table
   let ticketTableTitle;
 
@@ -226,24 +230,22 @@ export default function Dashboard({ title, userType, bg }) {
 
   // update User status
   let updateUserStatus = () => {
-
     let { userId, status } = editUserStatus;
-
+  
+   console.log(userId)
     updateUser(updateUserStatusApi + userId, { userStatus: status }).then((res) => {
+     
       let sts = res.data[0].userType;
-      console.log(sts)
-    
 
       if (sts == "CUSTOMER") {
         dummyFn("CUSTOMER", "users", setCustomers);
       } else{
         dummyFn("ENGINEER", "engineers", setEngineers);
-    } 
-       
+    }
+
     }).catch(err => console.log(err))
-    
-    setEditUserStatus({ show: false, status: "", userId: "" })
-    
+
+    setEditUserStatus({ show: false, status: "APPROVED", userId: "" })
   }
 
   // send email function
@@ -494,7 +496,7 @@ export default function Dashboard({ title, userType, bg }) {
                   icon: EditIcon,
                   tooltip: "edit",
                   onClick: (e, rowData) => {
-                    setEditUserStatus({ ...editUserStatus, show: true,userId:rowData.userId });
+                    setEditUserStatus({ ...editUserStatus, show: true,userId: JSON.stringify( rowData.userId )});
                   },
                 },
               ]}
