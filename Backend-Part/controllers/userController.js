@@ -65,12 +65,6 @@ const updateUserById = async (req, res) => {
         }
 
 
-        if (objectPassed.userType == constants.userTypes.customer
-        ) {
-            req.body.userStatus = constants.userStatus.approved
-
-        }
-
         let userToBeUpdated = await User.findOneAndUpdate({
             userId: req.params.userId
         }, { ...objectPassed }, {

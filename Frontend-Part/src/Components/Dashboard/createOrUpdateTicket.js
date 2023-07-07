@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 let postTicketApi = "/crm/api/v1/tickets"
 let putTicketCall = "/crm/api/v1/tickets/";
 
-export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,userType }) {
+export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,userType,engineers }) {
    
 
   let ModalInfo = useSelector((state) => state.ModalInfo);
@@ -83,13 +83,14 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                     setUpdateModal(false)
                     dispatch({type:"initial"})
                 }}
+                size="lg"
                 centered
                 backdrop="static"
             >
                 <Modal.Header closeButton>{title}</Modal.Header>
 
-                <Modal.Body>
-                    <form onSubmit={updateModal == true ? updateTicket : createTicket}>
+                <Modal.Body >
+                    <form  onSubmit={updateModal == true ? updateTicket : createTicket}>
 
                         {updateModal && <p> ID :<span className="text-success"> {ModalInfo._id }</span></p>}     
 
@@ -150,7 +151,17 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                                 })
                             }} />
                         </div>
- }
+                        }
+                        
+                        {userType == "ADMIN" && <div className="input-group m-2 row">
+                            <label className="col-3">Engineer Assigned</label>
+                            <select className="form-control mx-2 ">
+
+                                {engineers.filter(obj => obj.userStatus == "APPROVED").map(eng =>
+                                    <option key={eng._id} value={ModalInfo.engineerUserId}>{eng.userId}</option>)}
+
+                            </select>
+                        </div>}
 
                         <div className="input-group m-2 row">
                             <label className="col-6" htmlFor="ticketPriority"> Ticket Priority</label>
@@ -169,6 +180,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                                 <option value={4}>4</option>
                             </select>
                         </div>
+                       
 
                         <div className="d-flex justify-content-end m-2">
                             <button onClick={(e) => {

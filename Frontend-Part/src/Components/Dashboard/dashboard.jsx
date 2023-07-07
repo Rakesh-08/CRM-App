@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import CreateUpdateTicket from "./createOrUpdateTicket";
 import { getTickets, deleteApiCall, sendEmail } from "../../apiCalls/ticket";
-import { getUsers } from "../../apiCalls/users";
+import { getUsers,updateUser } from "../../apiCalls/users";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
 import EditIcon from '@mui/icons-material/Edit';
@@ -16,7 +16,8 @@ import { Modal } from "react-bootstrap";
 let getAllTickets = "/crm/api/v1/tickets";
 let deleteTicketApi = "/crm/api/v1/tickets/";
 let sendEmailApi = "/crm/api/v1/sendEmail";
-let getUsersApi="/crm/api/v1/users"
+let getUsersApi = "/crm/api/v1/users";
+let updateUserStatusApi="/crm/api/v1/users/"
 
 let initialEmailObject = {
   userId: "",
@@ -52,6 +53,7 @@ export default function Dashboard({ title, userType, bg }) {
     },
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
+  let [editUserStatus,setEditUserStatus]=useState({show:false,status:"APPROVED",userId:""})
   let [emailObject, setEmailObject] = useState(initialEmailObject);
   let [adminRoutes, setAdminRoutes] = useState("tickets")
   let [customers, setCustomers] = useState([]);
@@ -107,40 +109,35 @@ export default function Dashboard({ title, userType, bg }) {
   
 
   // get all users function
-
-  let getAllUsers =  () => {
-    
-    
-    let dummyFn = (userTypes, users, setter) => {
-    
-      return getUsers(getUsersApi, userTypes)
+  
+    let dummyFn = (userType, users, setter) => {
+      return getUsers(getUsersApi, userType)
         .then((response) => {
           let d = response.data.Data;
 
           let approvedCount = d.filter(
-            (obj) => obj.userType == userTypes
+            (obj) => obj.userStatus == "APPROVED"
           ).length;
-
+          console.log(d)
+ 
           setter(d);
-     
 
-          console.log("log "+ userTypes)
-
-          setUserStatus((prevState)=> ({
+          setUserStatus((prevState) => ({
             ...prevState,
             [users]: {
               total: d.length,
               approved: approvedCount,
               pending: d.length - approvedCount,
             },
-          }))
+          }));
         })
         .catch((err) => console.log(err));
+    };
   
-    }
-  
+
+  let getAllUsers =  () => {
      dummyFn("CUSTOMER", 'users', setCustomers) 
-     dummyFn("ENGINEER", 'engineers', setEngineers) 
+     dummyFn("ENGINEER", "engineers", setEngineers); 
     
   }
 
@@ -157,8 +154,7 @@ export default function Dashboard({ title, userType, bg }) {
 
   //columns of users table
   
-  let toggle =
-    adminRoutes == "users"
+  let toggle = adminRoutes == "users"
       ? {
           title: "Tickets Created",
           field: "ticketsCreated",
@@ -181,6 +177,7 @@ export default function Dashboard({ title, userType, bg }) {
 
   // toggle between reporter or assignee on same table
   let ticketTableTitle;
+
   if (userType == "CUSTOMER") {
     ticketTableTitle="Tickets raised by you"
     columns = [...columns, { title: "ASSIGNEE", field: "assigneeName" }];
@@ -198,7 +195,7 @@ export default function Dashboard({ title, userType, bg }) {
   }
 
   let sendEmailAction =
-    userType !== "CUSTOMER"
+    userType !== "CUSTOMER" && adminRoutes!=="users"
       ? {
           icon: EmailIcon,
           tooltip: "Send Email",
@@ -225,6 +222,28 @@ export default function Dashboard({ title, userType, bg }) {
     }
   };
 
+  // update User status
+  let updateUserStatus = () => {
+
+    let { userId, status } = editUserStatus;
+
+    updateUser(updateUserStatusApi + userId, { userStatus: status }).then((res) => {
+      let sts = res.data[0].userType;
+      console.log(sts)
+    
+
+      if (sts == "CUSTOMER") {
+        dummyFn("CUSTOMER", "users", setCustomers);
+      } else{
+        dummyFn("ENGINEER", "engineers", setEngineers);
+    } 
+       
+    }).catch(err => console.log(err))
+    
+    setEditUserStatus({ show: false, status: "", userId: "" })
+    
+  }
+
   // send email function
   let sendEmailFn = (e) => {
     e.preventDefault();
@@ -241,9 +260,15 @@ export default function Dashboard({ title, userType, bg }) {
         setMessage(response.data.message);
         setTimeout(() => {
           setMessage("");
-        }, 5000);
+        }, 10000);
       })
-      .catch((err) => console.log(err.response.data));
+      .catch((err) => {
+        console.log(err.response.data)
+        setMessage(err.response.data.message);
+        setTimeout(() => {
+          setMessage("");
+        }, 10000);
+      });
 
     setShowEmailModal(false);
   };
@@ -280,7 +305,7 @@ export default function Dashboard({ title, userType, bg }) {
 
       {userType == "ADMIN" ? (
         <div>
-          <div style={{ height: "2.2em" }} className="mb-4 mx-2  d-flex ">
+          <div style={{ height: "2.2em" }} className="mb-4 mx-2 px-2  d-flex ">
             <div
               className={` ${
                 adminRoutes == "users" &&
@@ -300,8 +325,7 @@ export default function Dashboard({ title, userType, bg }) {
               className={` ${
                 adminRoutes == "engineers" &&
                 " border-bottom border-primary border-2  "
-                } bg-transparent  mx-2`}
-              
+              } bg-transparent  mx-2`}
             >
               <button
                 onClick={() => {
@@ -424,6 +448,7 @@ export default function Dashboard({ title, userType, bg }) {
                     status: rowData.status,
                     _id: rowData._id,
                     comments: rowData.comments,
+                    engineerUserId:rowData.assignee
                   },
                 });
 
@@ -457,15 +482,40 @@ export default function Dashboard({ title, userType, bg }) {
               }
               data={adminRoutes == "users" ? customers : engineers}
               columns={usersColumns}
-                actions={[
-              sendEmailAction,
+              actions={[
+                sendEmailAction,
                 {
                   icon: EditIcon,
                   tooltip: "edit",
-                  onClick: (e, rowData) => {},
+                  onClick: (e, rowData) => {
+                    setEditUserStatus({ ...editUserStatus, show: true,userId:rowData.userId });
+                  },
                 },
               ]}
             />
+            <div>
+              <Modal
+                show={editUserStatus.show}
+                onHide={() =>
+                  setEditUserStatus({ ...editUserStatus, show: false })
+                }
+                backdrop="static"
+                centered
+              >
+                <Modal.Header closeButton>Change the User Status</Modal.Header>
+                <Modal.Body>
+                  <div className="input-group m-2">
+                    <label className="m-2">user Status</label>
+                      <select value={editUserStatus.status} onChange={(e) =>setEditUserStatus({...editUserStatus,status:e.target.value})} className="form-control m-2 p-2">
+                      <option value="APPROVED">APPROVED</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="BLOCKED">BLOCKED</option>
+                    </select>
+                  </div>
+                  <button  type="button" onClick={updateUserStatus} className="mx-auto btn btn-success">Done</button>
+                </Modal.Body>
+              </Modal>
+            </div>
           </>
         )}
       </div>
@@ -558,6 +608,7 @@ export default function Dashboard({ title, userType, bg }) {
             btnAction="update"
             fetchTicketsData={fetchTicketsData}
             userType={userType}
+            engineers={engineers}
           />
         ) : (
           <CreateUpdateTicket
