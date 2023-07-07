@@ -2,6 +2,8 @@
 import axios from "axios";
 import base_url from "./apiUtils";
 
+let sendEmailApi = "https://notification-service-m4gi.onrender.com/notificationService/api/v1/sendEmail";
+
 let token = {
     headers: {
         "x-access-token": `${localStorage.getItem("accessToken")}`
@@ -35,7 +37,12 @@ let getEmail = async (url,userId) => {
     return await axios.get(base_url + url+ userId, token)
 }
 
-export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall,getEmail }
+let sendEmail = async (obj) => {
+    
+    return await axios.post(sendEmailApi, obj, token)
+}
+
+export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall,getEmail ,sendEmail}
 
 
 
