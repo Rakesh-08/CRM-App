@@ -24,7 +24,7 @@ const validateSignupRequest = async (req,res, next) => {
 
     // validate if the userId already exist
 
-    const IsUserIdExist = await User.findOne({ userId: req.body.userId })
+    const IsUserIdExist = await User.findOne({ userId: req.body.userId.trim() })
     if (IsUserIdExist) {
        return  res.status(400).send({
             message:"Failed! user with given userId already exist"

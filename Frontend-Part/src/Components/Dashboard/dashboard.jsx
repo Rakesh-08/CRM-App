@@ -496,7 +496,7 @@ export default function Dashboard({ title, userType, bg }) {
                   icon: EditIcon,
                   tooltip: "edit",
                   onClick: (e, rowData) => {
-                    setEditUserStatus({ ...editUserStatus, show: true,userId: JSON.stringify( rowData.userId )});
+                    setEditUserStatus({ ...editUserStatus, show: true,userId: rowData.userId });
                   },
                 },
               ]}
