@@ -4,11 +4,12 @@ const serverConfig = require("./configs/serverConfig");
 const express = require("express");
 const expressApp = express();
 const bodyParser = require("body-parser");
-const emailBgJob = require("./crons/emailSenderBGjob")
+const emailBgJob = require("./crons/emailSenderBGjob");
+const cors= require("cors")
 require("dotenv").config();
 
 expressApp.use(bodyParser.json());
-
+expressApp.use(cors());
 
 
 mongoose.connect(dbConfig.DB_URL);
