@@ -18,9 +18,9 @@ const signup = async (req, res, next) => {
     try {
         const createUser = await User.create({
             name: req.body.name,
-            userId: req.body.userId,
+            userId: req.body.userId.trim(),
             email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 8),
+            password: bcrypt.hashSync(req.body.password.trim(), 8),
             userType: req.body.userType,
             userStatus: currentUserStatus
             
@@ -52,7 +52,7 @@ const signup = async (req, res, next) => {
 
 const signin = async(req,res,next) => {
     
-    const user = await User.findOne({ userId: req.body.userId });
+    const user = await User.findOne({ userId: req.body.userId.trim() });
    
 
     if (!user) {
@@ -72,7 +72,7 @@ const signin = async(req,res,next) => {
     }
 
 // check for password matches or not 
-    let isPasswordValid = bcrypt.compareSync(req.body.password, user.password);
+    let isPasswordValid = bcrypt.compareSync(req.body.password.trim(), user.password);
 
     if (!isPasswordValid) {
         return res.status(401).send({
