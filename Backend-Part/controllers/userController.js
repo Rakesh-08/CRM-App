@@ -64,7 +64,7 @@ const updateUserById = async (req, res) => {
             })
         }
 
-        console.log(req.params.userId)
+        console.log(  JSON.parse( req.params.userId))
 
         let userToBeUpdated = await User.findOneAndUpdate({
             userId: req.params.userId
