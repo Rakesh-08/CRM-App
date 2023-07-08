@@ -275,7 +275,7 @@ const deleteTicket = async (req, res) => {
                     userId: ticket.reporter
                 }).select({ ticketsAssigned: 1, _id: 0 })
 
-                assignedEngineer.ticketsAssigned = assignedEngineer.ticketsAssigned.filter(id => id !== ticket._id)
+                assignedEngineer.ticketsAssigned = assignedEngineer.ticketsAssigned.filter(id => id != ticket._id)
 
                 await assignedEngineer.save();
 
@@ -335,10 +335,10 @@ const assignTicketToEngineer = async (req, res) => {
             let prevEngineer = await User.findOne({
                 userId: ticket.assignee
             })
-                 console.log(ticketId)
+                 
 
             prevEngineer.ticketsAssigned = prevEngineer.ticketsAssigned.filter(id => id != ticketId)
-           console.log( prevEngineer.ticketsAssigned)
+
           await  prevEngineer.save();
 
         }

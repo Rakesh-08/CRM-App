@@ -285,6 +285,7 @@ export default function Dashboard({ title, userType, bg }) {
     
     assignEngineerToTicket(assignEngineerApi, temp).then((response) => {
       fetchTicketsData();
+      alert(response.data.message)
        setAssignEngineer({
          ticketId: "",
          engineerUserId: "",
@@ -297,8 +298,6 @@ export default function Dashboard({ title, userType, bg }) {
     })
    
   }
-
-  
 
   // send email function
   let sendEmailFn = async(e) => {
