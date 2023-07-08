@@ -272,7 +272,8 @@ export default function Dashboard({ title, userType, bg }) {
 
     setEditUserStatus({ show: false, status: "APPROVED", userId: "" })
   }
-
+ 
+  console.log(engineers)
   // assign or change the engineer 
   let AssignEngineerFn = () => {
     
@@ -283,14 +284,18 @@ export default function Dashboard({ title, userType, bg }) {
     }
     
     assignEngineerToTicket(assignEngineerApi, temp).then((response) => {
-      console.log(response)
-    }).catch((err)=>{console.log(err)})
-    setAssignEngineer({
-      ticketId: "",
-      engineerUserId: "",
-      change: false,
-      show: false,
-    });
+      fetchTicketsData();
+       setAssignEngineer({
+         ticketId: "",
+         engineerUserId: "",
+         change: false,
+         show: false,
+       });
+    }).catch((err) => {
+      alert(err.response.data.message)
+      console.log(err)
+    })
+   
   }
 
   // send email function

@@ -324,11 +324,15 @@ const assignTicketToEngineer = async (req, res) => {
     } else {
 
         if (ticket.assignee) {
+            console.log(ticket.assignee)
 
             let prevEngineer = await User.findOne({
                 userId: ticket.assignee
             })
+            console.log(prevEngineer);
+
             prevEngineer.ticketsAssigned = prevEngineer.ticketsAssigned.filter(id => id !== ticketId)
+           console.log( prevEngineer.ticketsAssigned)
           await  prevEngineer.save();
 
         }
