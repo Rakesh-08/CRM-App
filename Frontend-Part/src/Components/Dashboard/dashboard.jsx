@@ -8,6 +8,7 @@ import { getUsers,updateUser } from "../../apiCalls/users";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
 import EditIcon from '@mui/icons-material/Edit';
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import { Modal } from "react-bootstrap";
 
 
@@ -119,10 +120,12 @@ export default function Dashboard({ title, userType, bg }) {
       return getUsers(getUsersApi, userType)
         .then((response) => {
           let d = response.data.Data;
-
+          console.log(d)
           let approvedCount = d.filter(
             (obj) => obj.userStatus == "APPROVED"
           ).length;
+          let pendingCount = d.filter((obj) => obj.userStatus == "PENDING").length
+          console.log(pendingCount)
  
           setter(d);
          
@@ -132,7 +135,8 @@ export default function Dashboard({ title, userType, bg }) {
             [users]: {
               total: d.length,
               approved: approvedCount,
-              pending: d.length - approvedCount,
+              pending: pendingCount,
+              blocked:d.length -(approvedCount + pendingCount)
             },
           }));
         })
@@ -157,7 +161,7 @@ export default function Dashboard({ title, userType, bg }) {
     { title: "COMMENTS", field: "comments" },
   ];
 
-  //columns of users table
+  //columns of user details table
   
   let toggle = adminRoutes == "users"
       ? {
@@ -184,16 +188,31 @@ export default function Dashboard({ title, userType, bg }) {
 
   // toggle between reporter or assignee on same table
   let ticketTableTitle;
+  let deleteOrAssignAction
 
   if (userType == "CUSTOMER") {
-    ticketTableTitle="Tickets raised by you"
+    ticketTableTitle = "Tickets raised by you";
     columns = [...columns, { title: "ASSIGNEE", field: "assigneeName" }];
+   deleteOrAssignAction= {
+                  icon: DeleteIcon,
+                  tooltip: "Delete Ticket",
+                  onClick: (event, rowData) => {
+                    deleteTicket(rowData._id);
+                  },
+                }
     
   } else if (userType == "ENGINEER") {
     ticketTableTitle="Tickets assigned to you"
     columns = [...columns, { title: "REPORTER", field: "reporterName" }];
   } else {
-    ticketTableTitle="tickets created by all customers"
+    ticketTableTitle = "tickets created by all customers";
+    deleteOrAssignAction = {
+      icon:AssignmentIndIcon,
+      tooltip: "change engineer",
+      onClick: (e, rowData) => {
+           console.log(rowData)
+      }
+    }
      columns = [
        ...columns,
        { title: "REPORTER", field: "reporterName" },
@@ -430,13 +449,7 @@ export default function Dashboard({ title, userType, bg }) {
               data={ticketDetails}
               actions={[
                 sendEmailAction,
-                {
-                  icon: DeleteIcon,
-                  tooltip: "Delete Ticket",
-                  onClick: (event, rowData) => {
-                    deleteTicket(rowData._id);
-                  },
-                },
+                deleteOrAssignAction,
               ]}
               options={{
                 actionsColumnIndex: -1,
@@ -509,7 +522,7 @@ export default function Dashboard({ title, userType, bg }) {
                 backdrop="static"
                 centered
               >
-                <Modal.Header closeButton>Change the User Status</Modal.Header>
+                <Modal.Header className="bg-primary text-white fs-4" closeButton>Change the User Status</Modal.Header>
                 <Modal.Body>
                   <div className="input-group m-2">
                     <label className="m-2">user Status</label>
@@ -552,8 +565,8 @@ export default function Dashboard({ title, userType, bg }) {
             centered
             backdrop="static"
           >
-            <Modal.Header className="text-primary" closeButton>
-              Send Email to customer
+            <Modal.Header className="bg-danger fs-3 text-light" closeButton>
+              Send Email To ...
             </Modal.Header>
             <Modal.Body>
               <form onSubmit={sendEmailFn}>

@@ -87,12 +87,12 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                 centered
                 backdrop="static"
             >
-                <Modal.Header closeButton>{title}</Modal.Header>
+                <Modal.Header className="bg-success text-light fs-4" closeButton>{title}</Modal.Header>
 
                 <Modal.Body >
                     <form  onSubmit={updateModal == true ? updateTicket : createTicket}>
 
-                        {updateModal && <p> ID :<span className="text-success"> {ModalInfo._id }</span></p>}     
+                        {updateModal && <p> ID :<span className="text-warning"> {ModalInfo._id }</span></p>}     
 
                         <div className="input-group m-2 row">
                             <label className="col-3" htmlFor="title"> Title</label>
@@ -154,13 +154,15 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                         }
                         
                         {userType == "ADMIN" && <div className="input-group m-2 row">
+                            
                             <label className="col-3">Engineer Assigned</label>
-                            <select className="form-control mx-2 ">
+                            <input className="form-control mx-2 " value={ModalInfo.engineerUserId}  readOnly/>
+                            {/* <select className="form-control mx-2 ">
 
                                 {engineers.filter(obj => obj.userStatus == "APPROVED").map(eng =>
                                     <option key={eng._id} value={ModalInfo.engineerUserId}>{eng.userId}</option>)}
 
-                            </select>
+                            </select> */}
                         </div>}
 
                         <div className="input-group m-2 row">

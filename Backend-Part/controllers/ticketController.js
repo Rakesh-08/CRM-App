@@ -300,13 +300,13 @@ const deleteTicket = async (req, res) => {
 
 
 const assignTicketToEngineer = async (req, res) => {
-    const { ticketId, engineerAssigned } = req.body;
+    const { ticketId,engineerUserId, change } = req.body;
 
     let ticket = await Ticket.findById({
         _id: ticketId
     });
     let engineer = await User.findOne({
-        userId: engineerAssigned
+        userId: engineerUserId
     });
 
     if (!ticket) {
@@ -317,16 +317,30 @@ const assignTicketToEngineer = async (req, res) => {
         return res.status(404).send({
             message: "No engineer exist with this given id"
         })
-    } else if (ticket.assignee) {
+    } else if (ticket.assignee && !change) {
         return res.status(400).send({
             message: "engineer already assigned to this ticket"
         })
     } else {
-        ticket.assignee = engineerAssigned;
+
+        if (ticket.assignee) {
+
+            let prevEngineer = await User.findOne({
+                userId: ticket.assignee
+            })
+            prevEngineer.ticketsAssigned = prevEngineer.ticketsAssigned.filter(id => id !== ticketId)
+          await  prevEngineer.save();
+
+        }
+
+
+        ticket.assignee = engineerUserId;
+        ticket.assigneeName= engineer.name
         engineer.ticketsAssigned.push(ticketId)
 
         await ticket.save();
         await engineer.save();
+
         res.status(200).send({
             message: "ticket is successfully assigned to given engineer"
         })
