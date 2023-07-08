@@ -309,6 +309,12 @@ const assignTicketToEngineer = async (req, res) => {
         userId: engineerUserId
     });
 
+    if (ticket.assignee == engineerUserId) {
+        return res.status(200).send({
+            message:"the same engineer is already assigned to this ticket"
+        })
+    }
+
     if (!ticket) {
         return res.status(404).send({
             message: "No such ticket exist"
@@ -324,12 +330,12 @@ const assignTicketToEngineer = async (req, res) => {
     } else {
 
         if (ticket.assignee) {
-            console.log(ticket.assignee)
+           
 
             let prevEngineer = await User.findOne({
                 userId: ticket.assignee
             })
-            console.log(prevEngineer);
+                 console.log(ticketId)
 
             prevEngineer.ticketsAssigned = prevEngineer.ticketsAssigned.filter(id => id !== ticketId)
            console.log( prevEngineer.ticketsAssigned)

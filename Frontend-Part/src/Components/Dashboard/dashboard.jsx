@@ -298,6 +298,8 @@ export default function Dashboard({ title, userType, bg }) {
    
   }
 
+  
+
   // send email function
   let sendEmailFn = async(e) => {
     e.preventDefault();
@@ -670,7 +672,7 @@ export default function Dashboard({ title, userType, bg }) {
             backdrop="static"
           >
             <Modal.Header className="bg-danger fs-3 text-light" closeButton>
-              Send Email To ...
+              Send Email 
             </Modal.Header>
             <Modal.Body>
               <form onSubmit={sendEmailFn}>
