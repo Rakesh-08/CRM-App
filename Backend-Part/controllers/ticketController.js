@@ -148,7 +148,7 @@ const getAllTickets = async (req, res) => {
 
         let Request = await User.findOne({
             userId: req.userId
-        }).select("ticketsCreated ticketsAssigned");
+        }).select({ ticketsCreated: 1, ticketsAssigned: 1 });
 
         // if the request is coming from a admin
 
@@ -337,7 +337,7 @@ const assignTicketToEngineer = async (req, res) => {
             })
                  console.log(ticketId)
 
-            prevEngineer.ticketsAssigned = prevEngineer.ticketsAssigned.filter(id => id !== ticketId)
+            prevEngineer.ticketsAssigned = prevEngineer.ticketsAssigned.filter(id => id != ticketId)
            console.log( prevEngineer.ticketsAssigned)
           await  prevEngineer.save();
 
