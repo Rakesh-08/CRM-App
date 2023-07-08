@@ -32,6 +32,10 @@ let deleteApiCall = async (url) => {
     return await axios.delete(base_url + url, token)
 }
 
+let assignEngineerToTicket = async (url, obj) => {
+    return await axios.put(base_url + url, obj, token)
+}
+
 let getEmail = async (url,userId) => {
 
     return await axios.get(base_url + url+ userId, token)
@@ -42,7 +46,7 @@ let sendEmail = async (obj) => {
     return await axios.post(sendEmailApi, obj, token)
 }
 
-export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall,getEmail ,sendEmail}
+export { getTickets, createTicketsApi, updateTicketApi, deleteApiCall,getEmail ,sendEmail,assignEngineerToTicket}
 
 
 

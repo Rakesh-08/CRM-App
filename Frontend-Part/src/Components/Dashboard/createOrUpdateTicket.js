@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 let postTicketApi = "/crm/api/v1/tickets"
 let putTicketCall = "/crm/api/v1/tickets/";
 
-export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,userType,engineers }) {
+export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,userType}) {
    
 
   let ModalInfo = useSelector((state) => state.ModalInfo);
@@ -157,12 +157,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
                             
                             <label className="col-3">Engineer Assigned</label>
                             <input className="form-control mx-2 " value={ModalInfo.engineerUserId}  readOnly/>
-                            {/* <select className="form-control mx-2 ">
-
-                                {engineers.filter(obj => obj.userStatus == "APPROVED").map(eng =>
-                                    <option key={eng._id} value={ModalInfo.engineerUserId}>{eng.userId}</option>)}
-
-                            </select> */}
+                           
                         </div>}
 
                         <div className="input-group m-2 row">

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import CreateUpdateTicket from "./createOrUpdateTicket";
-import { getTickets, deleteApiCall, getEmail, sendEmail } from "../../apiCalls/ticket";
+import { getTickets, deleteApiCall, getEmail, sendEmail,assignEngineerToTicket } from "../../apiCalls/ticket";
 import { getUsers,updateUser } from "../../apiCalls/users";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from '@mui/icons-material/Email';
@@ -19,6 +19,7 @@ let deleteTicketApi = "/crm/api/v1/tickets/";
 let getEmailApi = "/crm/api/v1/getEmail/";
 let getUsersApi = "/crm/api/v1/users";
 let updateUserStatusApi = "/crm/api/v1/users/";
+let assignEngineerApi = "/crm/api/v1/assignTickets";
 
 
 let initialEmailObject = {
@@ -59,6 +60,8 @@ export default function Dashboard({ title, userType, bg }) {
   let [showEmailModal, setShowEmailModal] = useState(false);
   let [editUserStatus,setEditUserStatus]=useState({show:false,status:"APPROVED",userId:""})
   let [emailObject, setEmailObject] = useState(initialEmailObject);
+
+  let [assignEngineer,setAssignEngineer]=useState({ticketId:"",engineerUserId:"",change:false,show:false})
   let [adminRoutes, setAdminRoutes] = useState("tickets")
   let [customers, setCustomers] = useState([]);
   let [engineers, setEngineers] = useState([])
@@ -120,12 +123,12 @@ export default function Dashboard({ title, userType, bg }) {
       return getUsers(getUsersApi, userType)
         .then((response) => {
           let d = response.data.Data;
-          console.log(d)
+        
           let approvedCount = d.filter(
             (obj) => obj.userStatus == "APPROVED"
           ).length;
           let pendingCount = d.filter((obj) => obj.userStatus == "PENDING").length
-          console.log(pendingCount)
+         
  
           setter(d);
          
@@ -190,6 +193,8 @@ export default function Dashboard({ title, userType, bg }) {
   let ticketTableTitle;
   let deleteOrAssignAction
 
+ 
+
   if (userType == "CUSTOMER") {
     ticketTableTitle = "Tickets raised by you";
     columns = [...columns, { title: "ASSIGNEE", field: "assigneeName" }];
@@ -210,7 +215,7 @@ export default function Dashboard({ title, userType, bg }) {
       icon:AssignmentIndIcon,
       tooltip: "change engineer",
       onClick: (e, rowData) => {
-           console.log(rowData)
+           setAssignEngineer({...assignEngineer,ticketId:rowData._id,engineerUserId:rowData.assignee,show:true})
       }
     }
      columns = [
@@ -220,6 +225,7 @@ export default function Dashboard({ title, userType, bg }) {
      ];
   }
 
+  // send email action
   let sendEmailAction =
     userType !== "CUSTOMER" && adminRoutes!=="users"
       ? {
@@ -265,6 +271,26 @@ export default function Dashboard({ title, userType, bg }) {
     }).catch(err => console.log(err))
 
     setEditUserStatus({ show: false, status: "APPROVED", userId: "" })
+  }
+
+  // assign or change the engineer 
+  let AssignEngineerFn = () => {
+    
+    let temp = {
+      ticketId: assignEngineer.ticketId,
+      engineerUserId: assignEngineer.engineerUserId,
+      change:assignEngineer.change
+    }
+    
+    assignEngineerToTicket(assignEngineerApi, temp).then((response) => {
+      console.log(response)
+    }).catch((err)=>{console.log(err)})
+    setAssignEngineer({
+      ticketId: "",
+      engineerUserId: "",
+      change: false,
+      show: false,
+    });
   }
 
   // send email function
@@ -447,10 +473,7 @@ export default function Dashboard({ title, userType, bg }) {
               title={ticketTableTitle}
               columns={columns}
               data={ticketDetails}
-              actions={[
-                sendEmailAction,
-                deleteOrAssignAction,
-              ]}
+              actions={[sendEmailAction, deleteOrAssignAction]}
               options={{
                 actionsColumnIndex: -1,
               }}
@@ -464,7 +487,7 @@ export default function Dashboard({ title, userType, bg }) {
                     status: rowData.status,
                     _id: rowData._id,
                     comments: rowData.comments,
-                    engineerUserId:rowData.assignee
+                    engineerUserId: rowData.assignee,
                   },
                 });
 
@@ -490,11 +513,12 @@ export default function Dashboard({ title, userType, bg }) {
                 info="pending"
                 count={userStatus[adminRoutes].pending}
                 color="grey"
-                />
-                <InfoBox 
-                  info="blocked"
-                  count={userStatus[adminRoutes].blocked}
-                  color="purple"/>
+              />
+              <InfoBox
+                info="blocked"
+                count={userStatus[adminRoutes].blocked}
+                color="purple"
+              />
             </div>
             <MaterialTable
               title={
@@ -508,7 +532,11 @@ export default function Dashboard({ title, userType, bg }) {
                   icon: EditIcon,
                   tooltip: "edit",
                   onClick: (e, rowData) => {
-                    setEditUserStatus({ ...editUserStatus, show: true,userId:rowData.userId });
+                    setEditUserStatus({
+                      ...editUserStatus,
+                      show: true,
+                      userId: rowData.userId,
+                    });
                   },
                 },
               ]}
@@ -522,22 +550,93 @@ export default function Dashboard({ title, userType, bg }) {
                 backdrop="static"
                 centered
               >
-                <Modal.Header className="bg-primary text-white fs-4" closeButton>Change the User Status</Modal.Header>
+                <Modal.Header
+                  className="bg-primary text-white fs-4"
+                  closeButton
+                >
+                  Change the User Status
+                </Modal.Header>
                 <Modal.Body>
                   <div className="input-group m-2">
                     <label className="m-2">user Status</label>
-                      <select value={editUserStatus.status} onChange={(e) =>setEditUserStatus({...editUserStatus,status:e.target.value})} className="form-control m-2 p-2">
+                    <select
+                      value={editUserStatus.status}
+                      onChange={(e) =>
+                        setEditUserStatus({
+                          ...editUserStatus,
+                          status: e.target.value,
+                        })
+                      }
+                      className="form-control m-2 p-2"
+                    >
                       <option value="APPROVED">APPROVED</option>
                       <option value="PENDING">PENDING</option>
                       <option value="BLOCKED">BLOCKED</option>
                     </select>
                   </div>
-                  <button  type="button" onClick={updateUserStatus} className="mx-auto btn btn-success">Done</button>
+                  <button
+                    type="button"
+                    onClick={updateUserStatus}
+                    className="mx-auto btn btn-success"
+                  >
+                    Done
+                  </button>
                 </Modal.Body>
               </Modal>
             </div>
           </>
         )}
+
+        <div>
+          <Modal
+            show={assignEngineer.show}
+            onHide={() => setAssignEngineer({ ...assignEngineer, show: false })}
+            backdrop="static"
+          >
+            <Modal.Header className="bg-secondary text-white fs-4" closeButton>
+              Change the Assigned Engineer 
+            </Modal.Header>
+            <Modal.Body>
+              <h4 className="my-3 p-1 lead fs-5">Ticket : {assignEngineer.ticketId}</h4>
+              <div className="input-group m-2">
+                <label className="m-2">Assign Engineeer</label>
+                <select
+                  value={assignEngineer.engineerUserId}
+                  onChange={(e)=>setAssignEngineer({...assignEngineer,engineerUserId:e.target.value})}
+                className="form-control mx-2 ">
+                  {engineers
+                    .filter((obj) => obj.userStatus == "APPROVED")
+                    .map((eng) => (
+                      <option
+                        key={eng._id}
+                        value={eng.userId}
+                      >
+                        {eng.userId}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div className="input-group row m-2">
+                <label className="mx-2 col-md-3">Confirm</label>
+                <select
+                  className="form-control  mx-2 "
+                  value={assignEngineer.change}
+                  onChange={(e)=>setAssignEngineer({...assignEngineer,change:e.target.value})}
+                >
+                  <option value={true}>Yes</option>
+                  <option value={false}>No</option>
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={AssignEngineerFn}
+                className="mx-auto btn btn-primary"
+              >
+                Done
+              </button>
+            </Modal.Body>
+          </Modal>
+        </div>
       </div>
       <div className="text-center">
         <hr className=" bg-light" />
@@ -630,7 +729,6 @@ export default function Dashboard({ title, userType, bg }) {
             btnAction="update"
             fetchTicketsData={fetchTicketsData}
             userType={userType}
-            engineers={engineers}
           />
         ) : (
           <CreateUpdateTicket

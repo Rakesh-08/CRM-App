@@ -43,9 +43,9 @@ const validateTicketAssignment = (req, res, next) => {
        return res.status(400).send({
             message:"please pass the ticket id to be assigned"
         })
-    } else if (!req.body.engineerAssigned) {
+    } else if (!req.body.engineerUserId) {
         return res.status(400).send({
-            message:"please pass the engineers id to be assigned"
+            message:"please pass the engineers userid to be assigned"
         })
     }
     next();
