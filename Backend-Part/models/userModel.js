@@ -45,6 +45,10 @@ const userShchema = new mongoose.Schema({
     ticketsAssigned: {
         type: [mongoose.SchemaTypes.ObjectId],
         ref:"Ticket"
+    },
+    leadsAssigned: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref:"leadsModel"
     }
 })
 

@@ -66,6 +66,7 @@ async function init() {
 require('./routes/authRoutes')(expressApp);
 require("./routes/userRoutes")(expressApp);
 require("./routes/ticketRoutes")(expressApp);
+require("./routes/leadsRoutes")(expressApp)
 
 expressApp.get("/", (req,res) => {
     res.write("You are on your home Page and congrats your backend server is deployed successfully");

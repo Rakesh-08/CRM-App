@@ -2,7 +2,7 @@ const constants = require("../utils/constants");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const authConfig= require("../configs/authConfig")
+const authConfig = require("../configs/authConfig")
 
 const signup = async (req, res, next) => {
 
@@ -10,9 +10,9 @@ const signup = async (req, res, next) => {
     let currentUserStatus;
 
     if (currentUserType == constants.userTypes.customer) {
-        currentUserStatus= constants.userStatus.approved
+        currentUserStatus = constants.userStatus.approved
     } else {
-        currentUserStatus=constants.userStatus.pending
+        currentUserStatus = constants.userStatus.pending
     }
 
     try {
@@ -23,7 +23,7 @@ const signup = async (req, res, next) => {
             password: bcrypt.hashSync(req.body.password.trim(), 8),
             userType: req.body.userType,
             userStatus: currentUserStatus
-            
+
         })
 
         let responseObject = {
@@ -33,7 +33,7 @@ const signup = async (req, res, next) => {
             userType: createUser.userType,
             userStatus: createUser.userStatus,
             createdAt: createUser.createdAt,
-            updatedAt:createUser.updatedAt
+            updatedAt: createUser.updatedAt
         }
 
         res.status(200).send(responseObject)
@@ -43,57 +43,58 @@ const signup = async (req, res, next) => {
     } catch (e) {
 
         res.status(500).send({
-            message:'some internal error occurred while creating the user'
+            message: 'some internal error occurred while creating the user'
         })
 
     }
-    
+
 }
 
-const signin = async(req,res,next) => {
-    
+const signin = async (req, res, next) => {
+
     const user = await User.findOne({ userId: req.body.userId.trim() });
-   
+
 
     if (!user) {
         res.status(400).send({
-            message:"Failed! userid doesn't exist"
+            message: "Failed! userid doesn't exist"
         })
         return;
 
     }
- 
+
 
     if (user.userStatus !== constants.userStatus.approved) {
         res.status(403).send({
-            message:"Can't allow user to login as the userstatus is " + user.userStatus
+            message: "Can't allow user to login as the userstatus is " + user.userStatus
         })
         return;
     }
 
-// check for password matches or not 
+    // check for password matches or not 
     let isPasswordValid = bcrypt.compareSync(req.body.password.trim(), user.password);
 
     if (!isPasswordValid) {
         return res.status(401).send({
-            message:"Invalid Password"
+            message: "Invalid Password"
         })
     }
-    
+
     let token = jwt.sign({ id: user.userId }, authConfig.secretKey, {
-        expiresIn:86400
+        expiresIn: 86400
     })
 
 
     res.status(200).send({
+        _id: user._id,
         name: user.name,
         userId: user.userId,
         email: user.email,
         userType: user.userType,
         userStatus: user.userStatus,
         accessToken: token,
-        
-   })
+
+    })
 
 }
 
@@ -101,5 +102,5 @@ const authController = {
     signup,
     signin
 }
-module.exports= authController
+module.exports = authController
 

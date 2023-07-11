@@ -4,7 +4,7 @@ module.exports = (users) => {
 
     users.forEach(user => {
         let resObj = {
-            _id:user._id,
+            _id: user._id,
             name: user.name,
             email: user.email,
             userId: user.userId,
@@ -14,13 +14,19 @@ module.exports = (users) => {
 
         userResult.push(resObj)
         if (user.userType == "CUSTOMER") {
-             resObj.ticketsCreated= user.ticketsCreated
-             
+            resObj.ticketsCreated = user.ticketsCreated
+
         } else if (user.userType == "ENGINEER") {
-            resObj.ticketsAssigned= user.ticketsAssigned
-        } 
-        
+            resObj.ticketsAssigned = user.ticketsAssigned
+        } else if (user.userType == "SALES_REP") {
+            resObj.leadsAssigned = user.leadsAssigned;
+        }
+
     });
+
+    if (userResult.length == 1) {
+        return userResult[0];
+    }
     return userResult;
 }
 
