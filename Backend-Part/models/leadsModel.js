@@ -14,7 +14,6 @@ let leadSchema = new mongoose.Schema({
     mobile: {
         type: Number,
         required: true,
-        unique: true
     },
     email: {
         type: String,
@@ -25,7 +24,7 @@ let leadSchema = new mongoose.Schema({
         required: true
     },
     assignedTo: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.SchemaTypes.ObjectId,
         ref: 'Users'
     }
     ,
