@@ -20,13 +20,13 @@ let createLeads = async (req, res) => {
         })
 
 
-        let lead = await leadsModel.create(obj);
+
         // assign salesPerson;
         if (salesPerson) {
             obj.assignedTo = salesPerson._id;
-            await lead.save();
         }
 
+        let lead = await leadsModel.create(obj);
 
 
         // inform sales rep for new lead;
@@ -112,11 +112,13 @@ let updatelead = async (req, res) => {
 
         let updatePassed = req.body;
 
+
         let lead = await leadsModel.findOneAndUpdate({
-            _id: req.params._id
+            _id: req.params.leadId
         }, updatePassed, {
             new: true
         })
+
 
         if (lead) {
             res.status(200).send(lead)
