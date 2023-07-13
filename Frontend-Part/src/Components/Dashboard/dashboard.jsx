@@ -68,6 +68,7 @@ export default function Dashboard({ title, userType, bg }) {
 
   let [assignEngineer,setAssignEngineer]=useState({ticketId:"",engineerUserId:"",change:false,show:false})
   let [adminRoutes, setAdminRoutes] = useState("tickets")
+  let [leadsData,setLeadsData]= useState([])
   let [customers, setCustomers] = useState([]);
   let [engineers, setEngineers] = useState([]);
   let [salesRep,setSalesRep] =useState([])
@@ -170,8 +171,19 @@ export default function Dashboard({ title, userType, bg }) {
     { title: "COMMENTS", field: "comments" },
   ];
 
+  // columns of leads table
+
+  let leadsColumns = [
+    { title: "Id", field: "_id" },
+    { title: "Name", field: "name" },
+    { title: "Email", field: "email" },
+    { title: "Mobile", field: "mobile" },
+    { title: "Age", field: "age" },
+    { title: "Address", field: "address" },
+    { title: "Sales Representative", field: "assignedTo" },
+  ];
+
   //columns of user details table
-  
   let toggle = adminRoutes == "users"
       ? {
           title: "Tickets Created",
@@ -359,21 +371,22 @@ export default function Dashboard({ title, userType, bg }) {
       </div>
       <div className="mx-4 p-3  text-center">
         <h2 className=" fs-4">{title}</h2>
-        <p> Take a look at all tickets below !</p>
+        {userType !== "SALES_REP" && <p> Take a look at all tickets below !</p>}
       </div>
 
-      {userType !== "ADMIN" && (
-        <h4 className="m-4 lead fs-4">
-          Total Tickets:
-          <span className="text-danger fs-3 fw-bold mx-2">
-            {ticketStatus.Total}
-          </span>
-        </h4>
-      )}
+      {userType !== "ADMIN" ||
+        (userType !== "SALES_REP" && (
+          <h4 className="m-4 lead fs-4">
+            Total Tickets:
+            <span className="text-danger fs-3 fw-bold mx-2">
+              {ticketStatus.Total}
+            </span>
+          </h4>
+        ))}
 
       {userType == "ADMIN" ? (
         <div>
-          <div style={{ height: "3em" }} className="mb-4 mx-2 px-2  d-flex ">
+          <div style={{ height: "2.2em" }} className="my-4 mx-2 px-2  d-flex ">
             <div
               className={` ${
                 adminRoutes == "users" &&
@@ -507,20 +520,32 @@ export default function Dashboard({ title, userType, bg }) {
           )}
         </div>
       ) : (
-        <div className="d-flex flex-wrap justify-content-around px-4 m-4">
-          <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
-          <InfoBox
-            info="IN PROGRESS"
-            count={ticketStatus.IN_PROGRESS}
-            color="green"
-          />
-          <InfoBox info="BLOCKED" count={ticketStatus.BLOCKED} color="grey" />
-          <InfoBox info="CLOSED" count={ticketStatus.CLOSED} color="purple" />
+        <div>
+          {userType !== "SALES_REP" && (
+            <div className="d-flex flex-wrap justify-content-around px-4 m-4">
+              <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
+              <InfoBox
+                info="IN PROGRESS"
+                count={ticketStatus.IN_PROGRESS}
+                color="green"
+              />
+              <InfoBox
+                info="BLOCKED"
+                count={ticketStatus.BLOCKED}
+                color="grey"
+              />
+              <InfoBox
+                info="CLOSED"
+                count={ticketStatus.CLOSED}
+                color="purple"
+              />
+            </div>
+          )}
         </div>
       )}
 
       <div className=" mx-4 px-5 mt-3 h-100">
-        {adminRoutes == "tickets" ? (
+        {adminRoutes == "tickets" && userType !== "SALES_REP" ? (
           <>
             <MaterialTable
               title={ticketTableTitle}
@@ -549,6 +574,20 @@ export default function Dashboard({ title, userType, bg }) {
               }}
             />
           </>
+        ) : adminRoutes == "leads" || userType == "SALES_REP" ? (
+          <>
+            <div>
+              <MaterialTable
+                title="Leads Data"
+                columns={leadsColumns}
+                data={leadsData}
+                actions={[sendEmailAction]}
+                options={{
+                  actionsColumnIndex: -1,
+                }}
+              />
+            </div>
+          </>
         ) : (
           <>
             <div className="d-flex flex-wrap justify-content-around px-4 m-4">
@@ -575,11 +614,20 @@ export default function Dashboard({ title, userType, bg }) {
             </div>
             <MaterialTable
               title={
-                adminRoutes == "users" ? "Customer details" : adminRoutes=="engineers" ? "Engineer details":" Sales Representatives "
+                adminRoutes == "users"
+                  ? "Customer details"
+                  : adminRoutes == "engineers"
+                  ? "Engineer details"
+                  : " Sales Representatives "
               }
-              data={adminRoutes == "users" ? customers :adminRoutes=="engineers"? engineers:salesRep}
-                columns={usersColumns}
-                
+              data={
+                adminRoutes == "users"
+                  ? customers
+                  : adminRoutes == "engineers"
+                  ? engineers
+                  : salesRep
+              }
+              columns={usersColumns}
               actions={[
                 sendEmailAction,
                 {
@@ -704,7 +752,7 @@ export default function Dashboard({ title, userType, bg }) {
       </div>
       <div className="text-center">
         <hr className=" bg-light" />
-        <p className=" text-warning">{message}</p>
+        {userType !== "SALES_REP" && <p className=" text-warning">{message}</p>}
         {userType == "CUSTOMER" && (
           <>
             <p>Facing any issue ? Raise a ticket</p>
