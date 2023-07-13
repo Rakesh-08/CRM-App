@@ -209,6 +209,7 @@ export default function LoginComponent() {
                 >
                   <option value="CUSTOMER">CUSTOMER</option>
                   <option value="ENGINEER">ENGINEER</option>
+                  <option value="SALES_REP">SALES REPRESENTATIVE</option>
                 </select>
               </div>
             )}

@@ -144,7 +144,7 @@ const getAllTickets = async (req, res) => {
     try {
         let allTicketIds;
 
-        // if request is from customer or engineer;
+        // whether request is from customer or engineer;
 
         let Request = await User.findOne({
             userId: req.userId

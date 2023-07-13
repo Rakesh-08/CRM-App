@@ -55,6 +55,11 @@ export default function Dashboard({ title, userType, bg }) {
       approved: 0,
       pending: 0,
       blocked: 0
+    }, sales_rep: {
+      total: 0,
+      approved: 0,
+      pending: 0,
+      blocked:0
     },
   });
   let [showEmailModal, setShowEmailModal] = useState(false);
@@ -64,13 +69,14 @@ export default function Dashboard({ title, userType, bg }) {
   let [assignEngineer,setAssignEngineer]=useState({ticketId:"",engineerUserId:"",change:false,show:false})
   let [adminRoutes, setAdminRoutes] = useState("tickets")
   let [customers, setCustomers] = useState([]);
-  let [engineers, setEngineers] = useState([])
+  let [engineers, setEngineers] = useState([]);
+  let [salesRep,setSalesRep] =useState([])
   
 
 
   useEffect(() => {
     fetchTicketsData();
-    getAllUsers()
+   userType == 'ADMIN' && getAllUsers() 
   }, []);
 
   let dispatch = useDispatch();
@@ -116,14 +122,13 @@ export default function Dashboard({ title, userType, bg }) {
     }
   };
   
-
   // get all users function
   
     let dummyFn = (userType, users, setter) => {
       return getUsers(getUsersApi, userType)
         .then((response) => {
           let d = response.data.Data;
-        
+
           let approvedCount = d.filter(
             (obj) => obj.userStatus == "APPROVED"
           ).length;
@@ -149,7 +154,8 @@ export default function Dashboard({ title, userType, bg }) {
 
   let getAllUsers =  () => {
      dummyFn("CUSTOMER", 'users', setCustomers) 
-     dummyFn("ENGINEER", "engineers", setEngineers); 
+    dummyFn("ENGINEER", "engineers", setEngineers); 
+    dummyFn("SALES_REP","sales_rep",setSalesRep)
     
   }
 
@@ -172,11 +178,16 @@ export default function Dashboard({ title, userType, bg }) {
           field: "ticketsCreated",
           render: (rowData) => rowData.ticketsCreated.length,
         }
-      : {
+      :adminRoutes == "engineers"? {
           title: "Tickets Assigned",
           field: "ticketsAssigned",
           render: (rowData) => rowData.ticketsAssigned.length,
+        }:{
+          title: "Leads Assigned",
+          field: "leadsAssigned",
+          render: (rowData) => rowData.leadsAssigned.length,
         };
+  
   
   let usersColumns = [
     { title: "ID", field: "_id" },
@@ -259,13 +270,16 @@ export default function Dashboard({ title, userType, bg }) {
     let { userId, status } = editUserStatus;
   
     updateUser(updateUserStatusApi + userId, { userStatus: status }).then((res) => {
-     
+        
       let sts = res.data[0].userType;
+  
 
       if (sts == "CUSTOMER") {
         dummyFn("CUSTOMER", "users", setCustomers);
-      } else{
+      } else if(sts=="ENGINEER"){
         dummyFn("ENGINEER", "engineers", setEngineers);
+      } else {
+        dummyFn("SALES_REP", "sales_rep", setSalesRep);
     }
 
     }).catch(err => console.log(err))
@@ -273,7 +287,7 @@ export default function Dashboard({ title, userType, bg }) {
     setEditUserStatus({ show: false, status: "APPROVED", userId: "" })
   }
  
-  console.log(engineers)
+  
   // assign or change the engineer 
   let AssignEngineerFn = () => {
     
@@ -359,7 +373,7 @@ export default function Dashboard({ title, userType, bg }) {
 
       {userType == "ADMIN" ? (
         <div>
-          <div style={{ height: "2.2em" }} className="mb-4 mx-2 px-2  d-flex ">
+          <div style={{ height: "3em" }} className="mb-4 mx-2 px-2  d-flex ">
             <div
               className={` ${
                 adminRoutes == "users" &&
@@ -375,6 +389,7 @@ export default function Dashboard({ title, userType, bg }) {
                 users
               </button>
             </div>
+
             <div
               className={` ${
                 adminRoutes == "engineers" &&
@@ -388,6 +403,38 @@ export default function Dashboard({ title, userType, bg }) {
                 className=" bg-transparent  border-0 mx-2"
               >
                 engineers
+              </button>
+            </div>
+
+            <div
+              className={` ${
+                adminRoutes == "sales_rep" &&
+                " border-bottom border-primary border-2 "
+              } bg-transparent  mx-2`}
+            >
+              <button
+                onClick={() => {
+                  setAdminRoutes("sales_rep");
+                }}
+                className=" bg-transparent  border-0 mx-2"
+              >
+                Sales Representatives
+              </button>
+            </div>
+
+            <div
+              className={` ${
+                adminRoutes == "leads" &&
+                " border-bottom border-primary border-2 "
+              } bg-transparent  mx-2`}
+            >
+              <button
+                onClick={() => {
+                  setAdminRoutes("leads");
+                }}
+                className=" bg-transparent  border-0 mx-2"
+              >
+                Leads
               </button>
             </div>
             <div
@@ -528,10 +575,11 @@ export default function Dashboard({ title, userType, bg }) {
             </div>
             <MaterialTable
               title={
-                adminRoutes == "users" ? "Customer details" : "Engineer details"
+                adminRoutes == "users" ? "Customer details" : adminRoutes=="engineers" ? "Engineer details":" Sales Representatives "
               }
-              data={adminRoutes == "users" ? customers : engineers}
-              columns={usersColumns}
+              data={adminRoutes == "users" ? customers :adminRoutes=="engineers"? engineers:salesRep}
+                columns={usersColumns}
+                
               actions={[
                 sendEmailAction,
                 {
@@ -600,23 +648,28 @@ export default function Dashboard({ title, userType, bg }) {
             backdrop="static"
           >
             <Modal.Header className="bg-secondary text-white fs-4" closeButton>
-              Change the Assigned Engineer 
+              Change the Assigned Engineer
             </Modal.Header>
             <Modal.Body>
-              <h4 className="my-3 p-1 lead fs-5">Ticket : {assignEngineer.ticketId}</h4>
+              <h4 className="my-3 p-1 lead fs-5">
+                Ticket : {assignEngineer.ticketId}
+              </h4>
               <div className="input-group m-2">
                 <label className="m-2">Assign Engineeer</label>
                 <select
                   value={assignEngineer.engineerUserId}
-                  onChange={(e)=>setAssignEngineer({...assignEngineer,engineerUserId:e.target.value})}
-                className="form-control mx-2 ">
+                  onChange={(e) =>
+                    setAssignEngineer({
+                      ...assignEngineer,
+                      engineerUserId: e.target.value,
+                    })
+                  }
+                  className="form-control mx-2 "
+                >
                   {engineers
                     .filter((obj) => obj.userStatus == "APPROVED")
                     .map((eng) => (
-                      <option
-                        key={eng._id}
-                        value={eng.userId}
-                      >
+                      <option key={eng._id} value={eng.userId}>
                         {eng.userId}
                       </option>
                     ))}
@@ -627,7 +680,12 @@ export default function Dashboard({ title, userType, bg }) {
                 <select
                   className="form-control  mx-2 "
                   value={assignEngineer.change}
-                  onChange={(e)=>setAssignEngineer({...assignEngineer,change:e.target.value})}
+                  onChange={(e) =>
+                    setAssignEngineer({
+                      ...assignEngineer,
+                      change: e.target.value,
+                    })
+                  }
                 >
                   <option value={true}>Yes</option>
                   <option value={false}>No</option>
@@ -671,7 +729,7 @@ export default function Dashboard({ title, userType, bg }) {
             backdrop="static"
           >
             <Modal.Header className="bg-danger fs-3 text-light" closeButton>
-              Send Email 
+              Send Email
             </Modal.Header>
             <Modal.Body>
               <form onSubmit={sendEmailFn}>

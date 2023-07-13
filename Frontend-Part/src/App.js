@@ -5,6 +5,7 @@ import CustomerPage from "./Components/customerPage/CustomerPage";
 import EngineerPage from "./Components/engineerPage/EngineerPage";
 import AdminPage from "./Components/adminPage/AdminPage";
 import AuthError from "./Components/ErrorPage/AuthError";
+import SalesRep from "./Components/salesRepresentative.js/salesPerson";
 
 
 function App() {
@@ -14,7 +15,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginComponent />}></Route>
         <Route path="/CUSTOMER" element={<CustomerPage />}></Route>
-        <Route path="/ENGINEER" element={<EngineerPage />}></Route>
+          <Route path="/ENGINEER" element={<EngineerPage />}></Route>
+          <Route path="/SALES_REP" element={<SalesRep/>}></Route>
           <Route path="/ADMIN" element={<AdminPage />}></Route>
           <Route path="/Error" element={<AuthError/>}></Route>
       </Routes>

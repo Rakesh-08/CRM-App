@@ -24,9 +24,6 @@ module.exports = (users) => {
 
     });
 
-    if (userResult.length == 1) {
-        return userResult[0];
-    }
     return userResult;
 }
 
