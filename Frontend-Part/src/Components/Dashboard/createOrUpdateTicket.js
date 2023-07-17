@@ -7,10 +7,6 @@ import { createTicketsApi,updateTicketApi } from "../../apiCalls/ticket";
 import { useDispatch, useSelector } from "react-redux";
 
 
-
-let postTicketApi = "/crm/api/v1/tickets"
-let putTicketCall = "/crm/api/v1/tickets/";
-
 export default function CreateUpdateTicket({ showModal, setShowModal, updateModal, setUpdateModal, title, btnAction, fetchTicketsData,userType}) {
    
 
@@ -28,7 +24,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
             ticketPriority: ModalInfo.priority
         }
 
-        createTicketsApi(postTicketApi, input).then((res) => {
+        createTicketsApi(input).then((res) => {
 
             fetchTicketsData();
             dispatch({type:"initial"})
@@ -59,7 +55,7 @@ export default function CreateUpdateTicket({ showModal, setShowModal, updateModa
         }
 
 
-        updateTicketApi(putTicketCall+ ModalInfo._id, update)
+        updateTicketApi(ModalInfo._id, update)
             .then((res) => {
                 fetchTicketsData();
                 dispatch({ type: "initial" })

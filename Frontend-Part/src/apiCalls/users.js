@@ -8,13 +8,13 @@ let token = {
     }
 }
 
-let getUsers = async (url,status) => {
-  return await axios.get(base_url + url +`?userType=${status}`, token)
+let getUsers = async (status) => {
+    return await axios.get(base_url + `/crm/api/v1/users?userType=${status}`, token)
 
 }
 
-let updateUser = async (url, obj) => {
-    return await axios.put(base_url + url ,obj,token)
+let updateUser = async ( id,obj) => {
+    return await axios.put(base_url + "/crm/api/v1/users/"+id ,obj,token)
 
 }
 
