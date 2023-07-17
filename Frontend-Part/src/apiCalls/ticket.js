@@ -11,34 +11,34 @@ let token = {
 }
 
 
-let getTickets = async (url) => {
+let getTickets = async () => {
 
-    return await axios.get(base_url + url, token)
+    return await axios.get(base_url + "/crm/api/v1/tickets", token)
 
 }
 
-let createTicketsApi = async (url, obj) => {
+let createTicketsApi = async (obj) => {
     
-    return await axios.post(base_url + url, obj, token)
+    return await axios.post(base_url + "/crm/api/v1/tickets", obj, token)
 }
 
-let updateTicketApi = async (url, obj) => {
+let updateTicketApi = async (id, obj) => {
     
-    return await axios.put(base_url + url, obj, token)
+    return await axios.put(base_url + "/crm/api/v1/tickets/"+id, obj, token)
 }
 
-let deleteApiCall = async (url) => {
+let deleteApiCall = async (id) => {
     
-    return await axios.delete(base_url + url, token)
+    return await axios.delete(base_url + "/crm/api/v1/tickets/"+ id, token)
 }
 
-let assignEngineerToTicket = async (url, obj) => {
-    return await axios.put(base_url + url, obj, token)
+let assignEngineerToTicket = async ( obj) => {
+    return await axios.put(base_url + "/crm/api/v1/assignTickets", obj, token)
 }
 
-let getEmail = async (url,userId) => {
+let getEmail = async (userId) => {
 
-    return await axios.get(base_url + url+ userId, token)
+    return await axios.get(base_url + "/crm/api/v1/getEmail/" + userId, token)
 }
 
 let sendEmail = async (obj) => {
