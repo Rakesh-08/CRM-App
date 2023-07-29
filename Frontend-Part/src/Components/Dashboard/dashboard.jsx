@@ -259,7 +259,7 @@ export default function Dashboard({ title, userType, bg,getTicketStatus,adminRou
         </div>
 
       <div className=" mx-4 px-5 mt-3 h-100">
-        {adminRoutes == "tickets" && userType !== "SALES_REP" ? (
+        {adminRoutes == "tickets" || userType !== "SALES_REP" ? (
           <>
             <MaterialTable
               title={ticketTableTitle}
