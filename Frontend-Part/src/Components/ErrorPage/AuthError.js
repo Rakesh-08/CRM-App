@@ -8,11 +8,15 @@ export default function AuthError() {
     let ErrorCode = localStorage.getItem("errorCode")
     let ErrMsg = localStorage.getItem("errMsg")
 
-    useEffect(() => {
-          if (window.location.reload) {
-        NavigateTo("/")
-    }
-    },[])
+      useEffect(() => { 
+        if (!localStorage.getItem("firstLoad")) {
+            localStorage.setItem("firstLoad",1)
+        } else {
+            localStorage.removeItem("firstLoad");
+            NavigateTo("/Login")
+        }
+       
+    }, [])
     
   
     
