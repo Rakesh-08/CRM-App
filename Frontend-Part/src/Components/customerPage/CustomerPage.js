@@ -31,6 +31,7 @@ export default function CustomerPage() {
                 title={title}
                 userType={localStorage.getItem("userType")}
                 bg={"bg-dark"} 
+                adminRoutes="tickets"
                 />
         </div>
        

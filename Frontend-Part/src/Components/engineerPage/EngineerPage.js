@@ -17,7 +17,7 @@ export default function EngineerPage() {
     
     return (
         <div> 
-            <Dashboard title={title} userType={localStorage.getItem("userType")} bg={"bg-primary"} />
+            <Dashboard title={title} userType={localStorage.getItem("userType")} bg={"bg-primary"} adminRoutes="tickets" />
            
         </div>
     )

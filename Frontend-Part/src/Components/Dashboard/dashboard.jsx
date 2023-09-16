@@ -10,7 +10,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import { Modal } from "react-bootstrap";
 import EmailComponent from "../EmailComponent";
-
+import  ExportCsv from "@material-table/exporters/csv";
+import  ExportPdf from "@material-table/exporters/pdf"
 
 
 
@@ -204,7 +205,7 @@ export default function Dashboard({ title, userType, bg,getTicketStatus,adminRou
   }
 
   return (
-    <div className={` ${bg} text-white pb-5 `}>
+    <div className={` ${bg} text-white pb-2 `}>
       <div className="d-flex justify-content-between  bg-dark sticky-top p-2 mb-3">
         <div className="my-1">
           <p>
@@ -215,7 +216,7 @@ export default function Dashboard({ title, userType, bg,getTicketStatus,adminRou
             </span>
           </p>
         </div>
-        <button onClick={logoutFn} className="btn btn-warning mx-3 mt-2">
+        <button onClick={logoutFn} className="btn h-25 btn-warning mx-3 mt-2">
           Logout
         </button>
       </div>
@@ -227,48 +228,37 @@ export default function Dashboard({ title, userType, bg,getTicketStatus,adminRou
       {children}
 
       {userType !== "ADMIN" && userType !== "SALES_REP" && (
-          <h4 className="m-4 lead fs-4">
-            Total Tickets:
-            <span className="text-danger fs-3 fw-bold mx-2">
-              {ticketStatus.Total}
-            </span>
-          </h4>
+        <h4 className="m-4 lead fs-4">
+          Total Tickets:
+          <span className="text-danger fs-3 fw-bold mx-2">
+            {ticketStatus.Total}
+          </span>
+        </h4>
+      )}
+
+      <div>
+        {userType !== "SALES_REP" && userType !== "ADMIN" && (
+          <div className="d-flex flex-wrap justify-content-around px-4 m-4">
+            <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
+            <InfoBox
+              info="IN PROGRESS"
+              count={ticketStatus.IN_PROGRESS}
+              color="green"
+            />
+            <InfoBox info="BLOCKED" count={ticketStatus.BLOCKED} color="grey" />
+            <InfoBox info="CLOSED" count={ticketStatus.CLOSED} color="purple" />
+          </div>
         )}
+      </div>
 
-        <div>
-          {userType !== "SALES_REP"&& userType!=='ADMIN' && (
-            <div className="d-flex flex-wrap justify-content-around px-4 m-4">
-              <InfoBox info="OPEN" count={ticketStatus.OPEN} color="blue" />
-              <InfoBox
-                info="IN PROGRESS"
-                count={ticketStatus.IN_PROGRESS}
-                color="green"
-              />
-              <InfoBox
-                info="BLOCKED"
-                count={ticketStatus.BLOCKED}
-                color="grey"
-              />
-              <InfoBox
-                info="CLOSED"
-                count={ticketStatus.CLOSED}
-                color="purple"
-              />
-            </div>
-          )}
-        </div>
-
-      <div className=" mx-4 px-5 mt-3 h-100">
-        {adminRoutes == "tickets" || userType !== "SALES_REP" ? (
+      <div className=" mx-4  mt-3 h-100">
+        {adminRoutes == "tickets" && userType !== "SALES_REP" ? (
           <>
             <MaterialTable
               title={ticketTableTitle}
               columns={columns}
               data={ticketDetails}
               actions={[sendEmailAction, deleteOrAssignAction]}
-              options={{
-                actionsColumnIndex: -1,
-              }}
               onRowClick={(e, rowData) => {
                 dispatch({
                   type: "currentRow",
@@ -286,71 +276,96 @@ export default function Dashboard({ title, userType, bg,getTicketStatus,adminRou
                 setShowModal(true);
                 setUpdateModal(true);
               }}
+              options={{
+                actionsColumnIndex: -1,
+                exportMenu: [
+                  {
+                    label: "Export as PDF",
+                    exportFunc: (cols, datas) =>
+                      ExportPdf(cols, datas, "tickets Record"),
+                  },
+                  {
+                    label: "Export as ExcelFile",
+                    exportFunc: (cols, datas) =>
+                      ExportCsv(cols, datas, "tickets Record"),
+                  },
+                ],
+                headerStyle: {
+                  backgroundColor: "#01579b",
+                  color: "#FFF",
+                },
+              }}
             />
           </>
         ) : null}
 
-        {adminRoutes=="tickets"&& 
         <div>
-          <Modal
-            show={assignEngineer.show}
-            onHide={() => setAssignEngineer({ ...assignEngineer, show: false })}
-            backdrop="static"
-          >
-            <Modal.Header className="bg-secondary text-white fs-4" closeButton>
-              Change the Assigned Engineer
-            </Modal.Header>
-            <Modal.Body>
-              <h4 className="my-3 p-1 lead fs-5">
-                Ticket : {assignEngineer.ticketId}
-              </h4>
-              <div className="input-group m-2">
-                <label className="m-2">Assign Engineeer</label>
-                <select
-                  value={assignEngineer.engineerUserId}
-                  onChange={(e) =>
-                    setAssignEngineer({
-                      ...assignEngineer,
-                      engineerUserId: e.target.value,
-                    })
-                  }
-                  className="form-control mx-2 "
-                >
-                  {engineers
-                    .filter((obj) => obj.userStatus == "APPROVED")
-                    .map((eng) => (
-                      <option key={eng._id} value={eng.userId}>
-                        {eng.userId}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div className="input-group row m-2">
-                <label className="mx-2 col-md-3">Confirm</label>
-                <select
-                  className="form-control  mx-2 "
-                  value={assignEngineer.change}
-                  onChange={(e) =>
-                    setAssignEngineer({
-                      ...assignEngineer,
-                      change: e.target.value,
-                    })
-                  }
-                >
-                  <option value={true}>Yes</option>
-                  <option value={false}>No</option>
-                </select>
-              </div>
-              <button
-                type="button"
-                onClick={AssignEngineerFn}
-                className="mx-auto btn btn-primary"
+          {adminRoutes == "tickets" && userType == "ADMIN" &&(
+         
+            <Modal
+              show={assignEngineer.show}
+              onHide={() =>
+                setAssignEngineer({ ...assignEngineer, show: false })
+              }
+              backdrop="static"
+            >
+              <Modal.Header
+                className="bg-secondary text-white fs-4"
+                closeButton
               >
-                Done
-              </button>
-            </Modal.Body>
-          </Modal>
-        </div>}
+                Change the Assigned Engineer
+              </Modal.Header>
+              <Modal.Body>
+                <h4 className="my-3 p-1 lead fs-5">
+                  Ticket : {assignEngineer.ticketId}
+                </h4>
+                <div className="input-group m-2">
+                  <label className="m-2">Assign Engineeer</label>
+                  <select
+                    value={assignEngineer.engineerUserId}
+                    onChange={(e) =>
+                      setAssignEngineer({
+                        ...assignEngineer,
+                        engineerUserId: e.target.value,
+                      })
+                    }
+                    className="form-control mx-2 "
+                  >
+                    {engineers?.filter((obj) => obj.userStatus == "APPROVED")
+                      .map((eng) => (
+                        <option key={eng._id} value={eng.userId}>
+                          {eng.userId}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="input-group row m-2">
+                  <label className="mx-2 col-md-3">Confirm</label>
+                  <select
+                    className="form-control  mx-2 "
+                    value={assignEngineer.change}
+                    onChange={(e) =>
+                      setAssignEngineer({
+                        ...assignEngineer,
+                        change: e.target.value,
+                      })
+                    }
+                  >
+                    <option value={true}>Yes</option>
+                    <option value={false}>No</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  onClick={AssignEngineerFn}
+                  className="mx-auto btn btn-primary"
+                >
+                  Done
+                </button>
+              </Modal.Body>
+            </Modal>
+          
+        )}</div>
       </div>
       <div className="text-center">
         <hr className=" bg-light" />
@@ -369,9 +384,8 @@ export default function Dashboard({ title, userType, bg,getTicketStatus,adminRou
       </div>
 
       <div>
-        <EmailComponent/>
+        <EmailComponent />
       </div>
-
 
       <div>
         {updateModal === true ? (

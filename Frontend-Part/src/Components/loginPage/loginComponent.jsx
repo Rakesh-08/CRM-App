@@ -6,8 +6,6 @@ import authApiCall from "../../apiCalls/auth";
 let signUpapi = "/crm/api/v1/auth/signup";
 let signInapi = "/crm/api/v1/auth/signin";
 
-
-
 let initialState = {
   name: "",
   email: "",
@@ -105,11 +103,11 @@ export default function LoginComponent() {
   }
 
   return (
-    <div className="bg-info vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div className="bg-success vh-100 d-flex flex-column justify-content-center align-items-center">
       <div className="mb-2">
-        <h1 className="py-2 mb-3 lead fs-1 text-light text-uppercase ">welcome to  <span className="text-secondary">customer support service</span></h1>
+        <h1 className="py-2 m-2 lead fs-1 text-light text-uppercase ">welcome to  <span className="text-warning">customer support service</span></h1>
       </div>
-      <div className="card  p-5  form-box rounded-4">
+      <div className="card  p-4 m-2 form-box rounded-4">
         <h3 className="my-4 text-center">{showSignup ? "Sign Up" : "Login"}</h3>
 
         <div>
@@ -216,7 +214,7 @@ export default function LoginComponent() {
 
             <button
               type="submit"
-              className="my-5 w-25 bg-primary text-white border-0 rounded-1 "
+              className="my-3 w-25 bg-primary text-white border-0 rounded-1 "
             >
               {showSignup ? "Submit" : "Login"}
             </button>
@@ -230,7 +228,7 @@ export default function LoginComponent() {
         )}
 
         <div>
-          <p className="my-2 text-primary text-underline">
+          <p className=" text-primary text-underline">
             {showSignup
               ? " Already have an account ?"
               : "Don't have an account ?"}

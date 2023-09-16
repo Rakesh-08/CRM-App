@@ -15,7 +15,7 @@ let postLead =async (obj) => {
 }
 
 let getLeads = async () => {
-    
+        let temp= await localStorage.getItem("accessToken")
     return await axios.get(base_url + "/crm/api/v1/leads",token)
 }
 

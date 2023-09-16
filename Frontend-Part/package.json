@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-table/core": "^6.1.17",
+    "@material-table/exporters": "^1.1.0",
     "@mui/icons-material": "^5.11.16",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

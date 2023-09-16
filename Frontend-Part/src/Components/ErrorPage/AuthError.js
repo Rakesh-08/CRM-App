@@ -13,7 +13,7 @@ export default function AuthError() {
             localStorage.setItem("firstLoad",1)
         } else {
             localStorage.removeItem("firstLoad");
-            NavigateTo("/Login")
+            NavigateTo("/")
         }
        
     }, [])
@@ -22,8 +22,8 @@ export default function AuthError() {
     
     return (
         <div className=" bg-dark  vh-100 d-flex justify-content-center align-items-center ">
-            <div>
-                <img className="rounded-5 " src="https://www.plctr.com/wp-content/uploads/plc-errors.jpg" alt="error Sign" />
+            <div className="m-4">
+                <img className="rounded-5 w-100" src="https://www.plctr.com/wp-content/uploads/plc-errors.jpg" alt="error Sign" />
                 <h3 className="my-5 text-white text-center p-4 border border-danger rounded-2 shadow ">{` ${ErrorCode} : ${ErrMsg}`}</h3>
             </div>
             

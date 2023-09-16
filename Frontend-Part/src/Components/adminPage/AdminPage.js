@@ -194,11 +194,11 @@ export default function AdminPage() {
                     engineers={engineers} >
                     
 
-                     <div style={{ height: "2.2em" }} className="my-4 mx-2 px-2  d-flex ">
+                     <div  className="my-4  px-2  d-flex flex-wrap ">
                     <div
                         className={` ${adminRoutes == "users" &&
                             " border-bottom border-primary border-2 "
-                            } bg-transparent  mx-2`}
+                            } bg-transparent  m-2`}
                     >
                         <button
                             onClick={() => {
@@ -213,7 +213,7 @@ export default function AdminPage() {
                     <div
                         className={` ${adminRoutes == "engineers" &&
                             " border-bottom border-primary border-2  "
-                            } bg-transparent  mx-2`}
+                            } bg-transparent  m-2`}
                     >
                         <button
                             onClick={() => {
@@ -228,7 +228,7 @@ export default function AdminPage() {
                     <div
                         className={` ${adminRoutes == "sales_rep" &&
                             " border-bottom border-primary border-2 "
-                            } bg-transparent  mx-2`}
+                            } bg-transparent  m-2`}
                     >
                         <button
                             onClick={() => {
@@ -243,7 +243,7 @@ export default function AdminPage() {
                     <div
                         className={` ${adminRoutes == "leads" &&
                             " border-bottom border-primary border-2 "
-                            } bg-transparent  mx-2`}
+                            } bg-transparent  m-2`}
                     >
                         <button
                             onClick={() => {
@@ -257,7 +257,7 @@ export default function AdminPage() {
                     <div
                         className={` ${adminRoutes == "tickets" &&
                             " border-bottom border-primary border-2 "
-                            } bg-transparent  mx-2`}
+                            } bg-transparent  m-2`}
                     >
                         <button
                             onClick={() => setAdminRoutes("tickets")}
@@ -268,14 +268,14 @@ export default function AdminPage() {
                     </div>
                     </div>
                     
-                    <div>
+                    <div className="d-flex justify-content-center">
 
 
                         {adminRoutes == "tickets" && (
                             <>
                                 {" "}
-                                <div className="d-flex justify-content-around mt-3">
-                                    <div className="bg-success rounded-3 w-25 text-center">
+                                <div className="d-flex mt-3 ">
+                                    <div className="bg-success p-2 rounded-3 m-1  text-center">
                                         <h4 className="my-5 lead">
                                             user Id:{" "}
                                             <span className="text-warning">
@@ -288,7 +288,7 @@ export default function AdminPage() {
                                         </p>
                                     </div>
 
-                                    <div className="bg-danger d-flex flex-column align-items-center rounded-3 w-25 p-1">
+                                    <div className="bg-danger p-2 d-flex m-1 flex-column align-items-center rounded-3  p-1">
                                         <div>
                                             <p className="fs-5 text-info">
                                                 OPEN :
@@ -328,9 +328,11 @@ export default function AdminPage() {
                     </div>
                 </Dashboard>
                 
-                <div className="p-4">
-                   {adminRoutes=="leads" && <LeadsData/>} 
-                </div>
+
+                {adminRoutes == "leads" &&
+                    <div className="p-4">
+                        <LeadsData />
+                    </div>}
             </div>
            
 
@@ -390,7 +392,15 @@ export default function AdminPage() {
                                     });
                                 },
                             },
-                        ]}
+                            ]}
+                            
+                            options={{
+                                headerStyle: {
+                                    backgroundColor: "black",
+                                    color: "white",
+                                    padding:"1em"
+                                }
+                            }}
                     />
                     </div>
                    
@@ -441,8 +451,6 @@ export default function AdminPage() {
                 
             </div>
            
-            
-
         </div>
     )
 }

@@ -49,8 +49,8 @@ export default function SalesRep() {
             />
             <div className="d-flex p-2 bg-info shadow-lg   justify-content-around">
                 <h5 className="lead">Got new Leads !</h5>
-                <h6>{ "----------->>>>>>>>>>"}</h6>
-                <button onClick={()=>setShowLeadForm(true)} className="btn btn-outline-success fw-bold">Create Leads</button>
+                <h6 className="my-auto">{ ">>>>>>>>>>"}</h6>
+                <button onClick={()=>setShowLeadForm(true)} className="btn btn-outline-success fw-bold m-1">Create Leads</button>
                
             </div>
 
@@ -93,7 +93,7 @@ export default function SalesRep() {
                                 </div>
 
                                 <div className="text-center m-3">
-                                    <button className="btn w-50 btn-primary text-warning">Create</button>
+                                    <button className="btn w-50 btn-warning ">Create</button>
                                 </div>
 
                             </form>
