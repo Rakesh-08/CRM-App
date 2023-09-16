@@ -419,7 +419,7 @@ let InfoBox = ({ info, count, color }) => {
   
   return (
     <div
-      className=" d-flex align-items-center justify-content-center rounded-2 p-1 m-2 "
+      className=" d-flex align-items-center justify-content-center rounded-2 p-1 m-1 "
       style={{ backgroundColor:[color], minWidth: "15vw" }}
     >
       <div className="text-center p-2 ">

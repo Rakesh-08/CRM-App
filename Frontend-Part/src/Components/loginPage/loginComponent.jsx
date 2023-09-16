@@ -103,8 +103,8 @@ export default function LoginComponent() {
   }
 
   return (
-    <div className="bg-success vh-100 d-flex flex-column justify-content-center align-items-center">
-      <div className="mb-2">
+    <div className="bg-success vh-100 position-relative d-flex flex-column justify-content-center align-items-center">
+      <div className="mt-5 position-absolute top-0">
         <h1 className="py-2 m-2 lead fs-1 text-light text-uppercase ">welcome to  <span className="text-warning">customer support service</span></h1>
       </div>
       <div className="card  p-4 m-2 form-box rounded-4">

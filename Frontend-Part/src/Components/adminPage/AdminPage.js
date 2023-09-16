@@ -9,6 +9,8 @@ import { getUsers, updateUser } from "../../apiCalls/users";
 import EmailIcon from '@mui/icons-material/Email';
 import EditIcon from '@mui/icons-material/Edit';
 import LeadsData from "../Dashboard/LeadsData";
+import ExportCsv from "@material-table/exporters/csv";
+import ExportPdf from "@material-table/exporters/pdf"
 
 
 export default function AdminPage() {
@@ -393,14 +395,29 @@ export default function AdminPage() {
                                 },
                             },
                             ]}
-                            
+
                             options={{
+                                actionsColumnIndex: -1,
+                                exportMenu: [
+                                    {
+                                        label: "Export as PDF",
+                                        exportFunc: (cols, datas) =>
+                                            ExportPdf(cols, datas, "Peoples Record"),
+                                    },
+                                    {
+                                        label: "Export as ExcelFile",
+                                        exportFunc: (cols, datas) =>
+                                            ExportCsv(cols, datas, "Peoples Record"),
+                                    },
+                                ],
                                 headerStyle: {
                                     backgroundColor: "black",
                                     color: "white",
-                                    padding:"1em"
+                                    padding: "1em"
                                 }
                             }}
+                            
+                            
                     />
                     </div>
                    
