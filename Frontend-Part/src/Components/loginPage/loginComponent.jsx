@@ -169,7 +169,7 @@ export default function LoginComponent() {
                 required
               />
             </div>
-            <div className=" row">
+            <div className=" position-relative row">
               <label className="col-4" htmlFor="password">
                 Password{" "}
               </label>
@@ -186,7 +186,8 @@ export default function LoginComponent() {
                 required
               />{" "}
               <i
-                className={`fa ${eyeConfig.class}`}
+                className={`fa ${eyeConfig.class} position-absolute top-0 end-0 m-3`}
+                style={{width:"3em"}}
                 id="togglePassword"
                 onClick={togglePasswordvisibility}
               ></i>
