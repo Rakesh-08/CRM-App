@@ -1,7 +1,7 @@
 
 
 .form-box{
-  
+  background-image: linear-gradient(5deg, black, transparent);
    min-width: 20vw;
     background-color: rgb(255, 255, 255);
     box-shadow: 1.4em 1.4em 2em   rgb(91, 42, 42);
