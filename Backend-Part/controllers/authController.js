@@ -16,6 +16,18 @@ const signup = async (req, res, next) => {
     }
 
     try {
+
+                 let totalUsers = await  User.find({});
+
+        if (totalUsers.length > 15) {
+            return res.status(300).send({
+                message:"Sorry! this application has limited capacity and its reached its maximum"
+            })
+        }
+
+        // send email to the admin that somebody has signed up ;
+
+        
         const createUser = await User.create({
             name: req.body.name,
             userId: req.body.userId.trim(),
