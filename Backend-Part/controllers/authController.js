@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authConfig = require("../configs/authConfig")
+let sendEmailFn=require("../utils/sendEmail")
 
 const signup = async (req, res, next) => {
 
@@ -26,6 +27,7 @@ const signup = async (req, res, next) => {
         }
 
         // send email to the admin that somebody has signed up ;
+        sendEmailFn();
 
         
         const createUser = await User.create({
