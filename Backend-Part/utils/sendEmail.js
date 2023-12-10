@@ -10,7 +10,9 @@ Rakesh_Mandal
 Software Developer`
 
 
-let sendEmailApi = "http://localhost:9999/notificationService/api/v1/sendEmail";
+let baseUrl = process.env.MONGODB_URI ? "https://notification-service-m4gi.onrender.com" : "http://localhost:8080";
+
+let sendEmailApi = `${baseUrl}/notificationService/api/v1/sendEmail`;
 
 module.exports = () => {
 
